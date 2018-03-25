@@ -1,5 +1,5 @@
 ---
-title: CV
+layout: raw
 permalink: /cv
 ---
 
