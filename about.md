@@ -4,10 +4,6 @@ title: About
 permalink: /about
 ---
 
-I am a musician, programmer, neuroscience researcher, 
+I am a musician, researcher, and programmer, currently working as a lab tech in the Brain and Cognitive Sciences Department at MIT with Caroline Robertson in the Kanwisher Lab. One current project is focused on measuring visual behavior while viewing naturalistic scenes in VR.
 
-I'm a lab tech in the Brain and Cognitive Sciences Department at MIT working with Caroline Robertson in the Kanwisher Lab. Recently, my work has been focused on investigating autism using pharmaceuticals, behavioral studies, and virtual reality. 
-
-I also love music and was in the Dartmouth Digital Musics program before moving to Boston. I enjoy writing and producing music.
-
-This is really rough and will be updated soon!
+I love music and was in the Dartmouth Digital Musics program before moving to Boston. In my spare time, I enjoy writing and producing music, creating audio-visual art projects and data sonifications. 
