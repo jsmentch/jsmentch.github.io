@@ -8,6 +8,6 @@ I am a lab manager in the <a class="text-accent" href="https://www.robertsonlab.
 
 I was in the Dartmouth <a class="text-accent" href="https://music.dartmouth.edu/graduate">Digital Musics</a> master's program and have previously worked in <a class="text-accent" href="http://www.abingtonneurology.com/">Alzheimer's disease clinical trials</a>, <a class="text-accent" href="http://www.personal.psu.edu/crf2/index.html">deep-sea marine biology</a>, <a class="text-accent" href="http://www.quanttera.com/aboutus.html">microelectronics</a>, and <a class="text-accent" href="https://caglab.org/">genomics</a>. In my free time, I enjoy writing and producing <a class="text-accent" href="https://soundcloud.com/sweatercore">music</a>, creating audio-visual art projects, and thinking about cool things to do with data/the brain/machine learning!
 
-This fall I will be joining the <a class="text-accent" href="http://www.hms.harvard.edu/dms/shbt/">the Harvard-MIT Program in Speech and Hearing Bioscience and Technology (SHBT)</a>!
+This fall I will be joining the <a class="text-accent" href="http://www.hms.harvard.edu/dms/shbt/">Harvard-MIT Program in Speech and Hearing Bioscience and Technology (SHBT)</a>!
 
 I take lots of pictures of a tibetan spaniel named <a class="text-accent" href="https://www.instagram.com/jshoonm/">François</a>.
