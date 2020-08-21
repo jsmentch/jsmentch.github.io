@@ -13,15 +13,24 @@
 # you will see them accessed via {{ site.title }}, {{ site.email }}, and so on.
 # You can create any custom variable you would like, and they will be accessible
 # in the templates via {{ site.myvariable }}.
-title: Jeff Mentch's Homepage!
+title: Jeff Mentch
 email: jsmentch@mit.edu
 description: >- # this means to ignore newlines until "baseurl:"
-  This is the homepage of Jeff Mentch. Welcome! This is my first homepage and still under
-  construction
+ Welcome! I'm a PhD student interested in neuroscience, machine learning, music, and art. See my posts below for what I am up to. Thanks for visiting my page!
+
+
+##### for local testing ######  
+# baseurl: ""
 baseurl: "" # the subpath of your site, e.g. /blog
-url: "" # the base hostname & protocol for your site, e.g. http://example.com
+url: "https://jsmentch.github.io" # the base hostname & protocol for your site, e.g. http://example.com
+
 twitter_username: jshoonm
 github_username:  jsmentch
+social_link: instagram
+social_username: jeff_xr_
+
+theme_color: black
+
 
 # Build settings
 markdown: kramdown
@@ -29,7 +38,8 @@ markdown: kramdown
 theme: jekyll-swiss
 plugins:
   - jekyll-feed
-
+  - jekyll-seo-tag
+  
 # Exclude from processing.
 # The following items will not be processed, by default. Create a custom list
 # to override the default setting.
