@@ -4,7 +4,7 @@ title: About
 permalink: /about
 ---
 
-I am an applied machine learning scientist and recent PhD graduate of the <a href="http://www.hms.harvard.edu/dms/shbt/">Harvard-MIT Speech and Hearing Bioscience and Technology (SHBT) Program</a>, where I worked with <a href="https://satra.cogitatum.org/group/">Satra Ghosh</a> in the Senseable Intelligence Group at MIT. My work focuses on building and evaluating multimodal and perception-driven systems using large-scale naturalistic datasets, including whole-brain fMRI encoding models and large pediatric speech corpora.
+I am a computational neuroscientist / applied scientist and recent PhD graduate of the <a href="http://www.hms.harvard.edu/dms/shbt/">Harvard-MIT Speech and Hearing Bioscience and Technology (SHBT) Program</a>, where I worked with <a href="https://satra.cogitatum.org/group/">Satra Ghosh</a> in the Senseable Intelligence Group at MIT. My work focuses on building and evaluating multimodal and perception-driven systems using large-scale naturalistic datasets, including whole-brain fMRI encoding models and large pediatric speech corpora.
 
 Previously, I was a lab manager in the <a href="https://www.robertsonlab.com/">Robertson Lab</a> 
 at Dartmouth, working both there and in the <a href="http://web.mit.edu/bcs/nklab/index.shtml">Kanwisher Lab</a> at MIT, where I designed and implemented VR eye-tracking and salience modeling pipelines to study visual attention. I hold a master's degree in <a href="https://music.dartmouth.edu/graduate">Digital Musics</a> from Dartmouth, where I worked with <a href="http://bregman.dartmouth.edu/~mcasey">Michael Casey</a> on machine learning approaches to neural stimulus reconstruction and music information retrieval.
