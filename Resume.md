@@ -4,6 +4,6 @@ title: Resume
 permalink: /resume
 ---
 
-[Download Resume](/assets/jmentch_resume.pdf) (or mobile view if iframe not supported)
+<p><a href="{{ '/assets/jmentch_resume.pdf' | relative_url }}" class="resume-download">Download resume</a> (PDF; use this link if the embed doesn’t load on your device.)</p>
 
-<iframe src="{{ site.baseurl }}/assets/jmentch_resume.pdf" width="100%" height="100%"></iframe>
+<iframe class="resume-embed" src="{{ '/assets/jmentch_resume.pdf' | relative_url }}" title="Jeff Mentch resume (PDF)" width="100%" height="100%"></iframe>
