@@ -1,27 +1,15 @@
 source "https://rubygems.org"
 
-# Hello! This is where you manage which Jekyll version is used to run.
-# When you want to use a different version, change it below, save the
-# file and run `bundle install`. Run Jekyll with `bundle exec`, like so:
-#
-#     bundle exec jekyll serve
-#
-# This will help ensure the proper Jekyll version is running.
-# Happy Jekylling!
-gem "jekyll", "~> 3.7.3"
-
-# ffi 1.14.x has precompiled binaries for Ruby 2.6 on macOS (1.15+ needs Ruby 3)
+# Jekyll 3.10 + kramdown 2.3.1+ fix Dependabot alerts (CVE-2020-14001, CVE-2021-28834)
+gem "jekyll", "~> 3.10"
+gem "kramdown", ">= 2.3.1"
+gem "kramdown-parser-gfm", "~> 1.1"
 gem "jekyll-swiss"
 gem "ffi", "~> 1.14.0"
 
-# If you want to use GitHub Pages, remove the "gem "jekyll"" above and
-# uncomment the line below. To upgrade, run `bundle update github-pages`.
-# gem "github-pages", group: :jekyll_plugins
-
-# If you have any plugins, put them here!
 group :jekyll_plugins do
-  gem "jekyll-feed", "~> 0.6"
-  gem "jekyll-seo-tag", "~> 2.5"
+  gem "jekyll-feed", "~> 0.17"
+  gem "jekyll-seo-tag", "~> 2.8"
 end
 
 # Windows does not include zoneinfo files, so bundle the tzinfo-data gem
