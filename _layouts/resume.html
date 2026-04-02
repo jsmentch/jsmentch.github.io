@@ -1,0 +1,20 @@
+---
+layout: default
+---
+{% assign pdf = '/assets/jmentch_resume.pdf' | relative_url %}
+<main class="main resume-page-main" id="main">
+  <div class="wrap resume-page-wrap">
+    <h1 class="resume-page-title">{{ page.title }}</h1>
+    <p class="resume-page-lead">PDF — use <strong>Open</strong> for full-screen in your browser, or <strong>Download</strong> to save a copy.</p>
+    <div class="resume-actions">
+      <a href="{{ pdf }}" class="btn btn-primary" target="_blank" rel="noopener noreferrer">Open resume</a>
+      <a href="{{ pdf }}" class="btn btn-secondary" download>Download PDF</a>
+    </div>
+    <iframe
+      class="resume-embed"
+      src="{{ pdf }}#view=FitH"
+      title="Resume preview (PDF)"
+      loading="lazy"></iframe>
+    <p class="resume-embed-note">Preview above — if it’s blank, use <a href="{{ pdf }}" target="_blank" rel="noopener noreferrer">Open resume</a>.</p>
+  </div>
+</main>
