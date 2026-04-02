@@ -19,6 +19,8 @@ social_username: francois_xr
 
 theme_color: black
 
+# Single source for “Resume” links (nav, home, redirects)
+resume_pdf: "/assets/jmentch_resume.pdf"
 
 # Build settings
 markdown: kramdown

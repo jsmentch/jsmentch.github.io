@@ -237,46 +237,6 @@ a:hover {
   font-size: 0.85rem;
 }
 
-/* Resume page — tall embed; primary action is “Open” (new tab = full viewer) */
-.resume-page-wrap {
-  max-width: 56rem;
-}
-
-.resume-page-title {
-  margin-bottom: 0.35rem;
-}
-
-.resume-page-lead {
-  font-size: 0.95rem;
-  color: var(--text-muted);
-  margin: 0 0 1.25rem;
-}
-
-.resume-actions {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.75rem;
-  margin-bottom: 1rem;
-}
-
-.resume-embed {
-  display: block;
-  width: 100%;
-  /* Explicit height: % height on iframe was collapsing (parent had no height) */
-  height: calc(100dvh - 15rem);
-  min-height: 72vh;
-  max-height: 1200px;
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  background: var(--bg-elevated);
-}
-
-.resume-embed-note {
-  font-size: 0.8rem;
-  color: var(--text-muted);
-  margin: 0.75rem 0 0;
-}
-
 /* 404 */
 .error-page {
   text-align: center;

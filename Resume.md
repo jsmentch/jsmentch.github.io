@@ -1,5 +1,5 @@
 ---
-layout: resume
+layout: redirect
 title: Resume
 permalink: /resume
 ---
