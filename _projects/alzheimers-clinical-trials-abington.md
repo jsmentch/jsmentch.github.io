@@ -1,7 +1,7 @@
 ---
 layout: project
 title: Alzheimer’s clinical trial coordination
-kicker: Clinical Research · Trials · Translational Medicine
+kicker: Clinical Research · Alzheimer’s · Phase II/III
 subtitle: >-
   Coordinated Phase II/III Alzheimer’s clinical trials, working directly with patients, caregivers, clinicians, and study protocols to support compliant, patient-centered research execution.
 stats:

@@ -1,7 +1,7 @@
 ---
 layout: project
 title: Deep-sea marine biology
-kicker: Field Research · Biology · Early Work
+kicker: Fieldwork · Deep Sea · Coral
 subtitle: >-
   Early research experience that taught me how to work carefully with unfamiliar systems, collect data under constraints, and stay curious outside the path I eventually took into ML and neuroscience.
 stats:

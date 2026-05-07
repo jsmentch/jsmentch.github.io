@@ -9,6 +9,6 @@
   <link rel="canonical" href="{{ redirect_target | absolute_url }}">
 </head>
 <body>
-  <p><a href="{{ redirect_target | relative_url }}">Continue to resume (PDF)</a></p>
+  <p><a href="{{ redirect_target | relative_url }}">{% if page.redirect_cta %}{{ page.redirect_cta }}{% elsif page.redirect_to %}Continue{% else %}Continue to resume (PDF){% endif %}</a></p>
 </body>
 </html>

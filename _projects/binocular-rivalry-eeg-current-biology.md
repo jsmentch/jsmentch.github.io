@@ -1,7 +1,7 @@
 ---
 layout: project
 title: Slower binocular rivalry in the autistic brain
-kicker: EEG · Autism · Computational Neuroscience
+kicker: Rivalry · Autism · EEG · Computational neuroscience
 subtitle: >-
   Co-authored EEG study showing slower neural and behavioral rivalry dynamics in autism, with neural signals predicting symptom severity and classifying diagnostic status.
 stats:

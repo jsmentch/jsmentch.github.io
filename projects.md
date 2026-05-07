@@ -87,36 +87,18 @@ wide: true
 
   <a class="project-card" id="neuroscout-feature-visualizer" href="{{ '/projects/neuroscout-feature-visualizer/' | relative_url }}">
     <div class="project-visual project-visual-badge project-visual-badge--viz" aria-hidden="true">
-      <span>p5</span>
-      <small>features · viz</small>
+      <span>NS</span>
+      <small>viz · annotate</small>
     </div>
     <div class="project-body">
-      <p class="project-type">Neuroscience · Data Visualization · JavaScript</p>
-      <h2>Neuroscout Feature Visualizer</h2>
-      <p>A browser-based p5.js tool for exploring AudioSet and other features extracted from naturalistic movie stimuli, built to make high-dimensional annotations easier to inspect and explain.</p>
-      <ul class="project-tags">
-        <li>JavaScript</li>
-        <li>p5.js</li>
-        <li>Data Viz</li>
-        <li>Neuroscout</li>
-      </ul>
-    </div>
-  </a>
-
-  <a class="project-card" id="audiovisual-annotation-platform" href="{{ '/projects/audiovisual-annotation-platform/' | relative_url }}">
-    <div class="project-visual project-visual-badge project-visual-badge--web" aria-hidden="true">
-      <span>Web</span>
-      <small>annotate · ship</small>
-    </div>
-    <div class="project-body">
-      <p class="project-type">Web Tools · Annotation · Research Infrastructure</p>
-      <h2>Audiovisual annotation platform</h2>
-      <p>Built and deployed a flexible web-based platform for labeling naturalistic movie stimuli for downstream neuroimaging, behavioral, and ML studies.</p>
+      <p class="project-type">Web App · Visualization · Annotation</p>
+      <h2>Neuroscout web tools</h2>
+      <p>p5.js feature visualizer plus a web annotation platform for naturalistic movies—making Neuroscout-scale stimulus features explorable and producing structured labels for neuroimaging and ML.</p>
       <ul class="project-tags">
         <li>Web App</li>
-        <li>Annotation</li>
-        <li>Research Ops</li>
-        <li>Multimodal Data</li>
+        <li>JavaScript</li>
+        <li>p5.js</li>
+        <li>Neuroscout</li>
       </ul>
     </div>
   </a>
@@ -127,7 +109,7 @@ wide: true
       <small>GABA · pharma</small>
     </div>
     <div class="project-body">
-      <p class="project-type">Psychophysics · Pharmacology · Clinical Research</p>
+      <p class="project-type">Psychophysics × Pharmacology · GABA</p>
       <h2>GABAergic inhibition and perceptual awareness</h2>
       <p>Co-first-author pharmacology study showing that both GABA_A and GABA_B modulation increased perceptual suppression during binocular rivalry, providing causal evidence linking inhibition to perceptual awareness.</p>
       <ul class="project-tags">
@@ -145,7 +127,7 @@ wide: true
       <small>rivalry · autism</small>
     </div>
     <div class="project-body">
-      <p class="project-type">EEG · Autism · Computational Neuroscience</p>
+      <p class="project-type">Rivalry · Autism · EEG · Computational neuroscience</p>
       <h2>Slower binocular rivalry in the autistic brain</h2>
       <p>Co-authored EEG study showing slower neural and behavioral rivalry dynamics in autism, with neural signals predicting symptom severity and classifying diagnostic status.</p>
       <ul class="project-tags">
@@ -163,7 +145,7 @@ wide: true
       <small>music · fMRI</small>
     </div>
     <div class="project-body">
-      <p class="project-type">Audio · fMRI · Thesis</p>
+      <p class="project-type">Stimulus reconstruction · Music · Neural decoding</p>
       <h2>Naturalistic music and neural representation</h2>
       <p>Master’s thesis linking naturalistic music stimuli to brain responses using computational modeling and a large-scale audio corpus.</p>
       <ul class="project-tags">
@@ -181,7 +163,7 @@ wide: true
       <small>Alzheimer’s trials</small>
     </div>
     <div class="project-body">
-      <p class="project-type">Clinical Research · Trials · Translational Medicine</p>
+      <p class="project-type">Clinical Research · Alzheimer’s · Phase II/III</p>
       <h2>Alzheimer’s clinical trial coordination</h2>
       <p>Coordinated Phase II/III Alzheimer’s clinical trials, working directly with patients, caregivers, clinicians, and study protocols to support compliant, patient-centered research execution.</p>
       <ul class="project-tags">
@@ -199,14 +181,14 @@ wide: true
       <small>deep sea · bio</small>
     </div>
     <div class="project-body">
-      <p class="project-type">Field Research · Biology · Early Work</p>
+      <p class="project-type">Fieldwork · Deep Sea · Coral</p>
       <h2>Deep-sea marine biology</h2>
       <p>Early research experience that taught me how to work carefully with unfamiliar systems, collect data under constraints, and stay curious outside the path I eventually took into ML and neuroscience.</p>
       <ul class="project-tags">
         <li>Fieldwork</li>
-        <li>Biology</li>
+        <li>Coral</li>
+        <li>Marine biology</li>
         <li>Research</li>
-        <li>Exploration</li>
       </ul>
     </div>
   </a>

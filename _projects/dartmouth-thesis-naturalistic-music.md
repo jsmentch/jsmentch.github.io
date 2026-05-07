@@ -1,7 +1,7 @@
 ---
 layout: project
 title: Naturalistic music and neural representation
-kicker: Audio · fMRI · Thesis
+kicker: Stimulus reconstruction · Music · Neural decoding
 subtitle: >-
   Master’s thesis linking naturalistic music stimuli to brain responses using computational modeling and a large-scale audio corpus.
 stats:

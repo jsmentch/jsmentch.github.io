@@ -1,7 +1,7 @@
 ---
 layout: project
 title: GABAergic inhibition and perceptual awareness
-kicker: Psychophysics · Pharmacology · Clinical Research
+kicker: Psychophysics × Pharmacology · GABA
 subtitle: >-
   Co-first-author pharmacology study showing that both GABA_A and GABA_B modulation increased perceptual suppression during binocular rivalry, providing causal evidence linking inhibition to perceptual awareness.
 stats:
