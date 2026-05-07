@@ -715,6 +715,17 @@ a:hover {
   color: #67e8f9;
 }
 
+/* Marine / sonification — GOM mosaic prototype */
+.project-visual-badge--soni {
+  background:
+    radial-gradient(ellipse 80% 60% at 40% 75%, rgba(45, 212, 191, 0.22), transparent 55%),
+    radial-gradient(ellipse 70% 50% at 85% 25%, rgba(56, 189, 248, 0.14), transparent 45%),
+    linear-gradient(175deg, #0a1418 0%, #060d12 100%);
+}
+.project-visual-badge--soni small {
+  color: #5eead4;
+}
+
 .figure-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(12rem, 1fr));

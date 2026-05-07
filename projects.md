@@ -193,6 +193,24 @@ wide: true
     </div>
   </a>
 
+  <a class="project-card" id="gom-mosaic-sonification" href="{{ '/projects/gom-mosaic-sonification/' | relative_url }}">
+    <div class="project-visual project-visual-badge project-visual-badge--soni" aria-hidden="true">
+      <span>GOM</span>
+      <small>mosaic · sonify</small>
+    </div>
+    <div class="project-body">
+      <p class="project-type">Data sonification · Visualization · Marine science</p>
+      <h2>Gulf of Mexico mosaic sonification</h2>
+      <p>p5.js sonification and visualization for deep-sea coral mosaic dive sites in the Gulf of Mexico—interactive exploration of survey imagery with GitHub Pages demo.</p>
+      <ul class="project-tags">
+        <li>p5.js</li>
+        <li>Sonification</li>
+        <li>JavaScript</li>
+        <li>Marine science</li>
+      </ul>
+    </div>
+  </a>
+
   {% comment %} Add new project cards above this row (infrared stays last). {% endcomment %}
   <a class="project-card" id="infrared-camera" href="{{ '/projects/infrared-camera-conversion/' | relative_url }}">
     <div class="project-visual">
