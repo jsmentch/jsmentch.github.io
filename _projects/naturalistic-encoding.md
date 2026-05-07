@@ -123,10 +123,8 @@ This work forms a central part of my dissertation and an *eLife* submission with
 
 Links to **Preregistration (primary)** and **Preregistration (revision)** appear in the buttons above.
 
-## Short version
+Full methodological detail, robustness checks, and limitations are in the preregistrations and the manuscript.
 
-I built a preregistered multimodal ML pipeline that predicts whole-brain fMRI responses to real-world movies and used it to test how low- and high-level information is weighted across cortex in autism. The work combines large-scale feature engineering, interpretable predictive modeling, rigorous statistical validation, and clinically relevant inference on noisy human data.
-
-## Disclosure
-
-This page is a concise project summary for portfolio purposes. Full methodological detail, thresholds, robustness analyses, comorbidity analyses, and limitations are documented in the preregistrations and manuscript.
+{% comment %}
+Editor stash: short elevator one-liner overlaps hero/subtitle; keep in sync when editing.
+{% endcomment %}

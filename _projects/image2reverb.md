@@ -45,16 +45,13 @@ The paper demonstrates generated impulse responses for real rooms, musical space
 
 ## My Role
 
-This project sits at the intersection of audio, perception, machine learning, and empirical evaluation: a very Jeff-shaped intersection. I was a co-author on the ICCV paper and contributed to the work connecting acoustic representations, perceptual plausibility, and model evaluation.
+This project sits at the intersection of audio, perception, machine learning, and empirical evaluation. I was a co-author on the ICCV paper and contributed to the work connecting acoustic representations, perceptual plausibility, and model evaluation.
 
-This section is intentionally conservative for now. The next improvement should be a more precise account of my role from project notes: what I built, analyzed, wrote, evaluated, or designed.
-
-## How To Improve This Page
-
-This is the first pass. Useful additions would be:
-
+{% comment %}
+TODO (page expansion):
 - A figure or short visual diagram showing image input, predicted impulse response, and convolved output.
 - A few example spaces with before/after audio clips if we have permission to host them.
-- A tighter description of my exact contributions from memory or project notes.
-- Selected figures from the paper or supplement if we want to reproduce them here.
-- A note about limitations: outdoor scenes, reflections, murals, shadows, and scale ambiguity.
+- A tighter description of exact contributions from project notes.
+- Selected figures from the paper or supplement.
+- Limitations: outdoor scenes, reflections, murals, shadows, scale ambiguity.
+{% endcomment %}
