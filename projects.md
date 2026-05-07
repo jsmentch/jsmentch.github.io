@@ -88,12 +88,12 @@ wide: true
   {% comment %} Add new project cards above this row (infrared stays last). {% endcomment %}
   <a class="project-card" id="infrared-camera" href="{{ '/projects/infrared-camera-conversion/' | relative_url }}">
     <div class="project-visual">
-      <img src="{{ '/assets/ir/phone.jpg' | relative_url }}" alt="LG G3 phone modified for near-infrared photography">
+      <img src="{{ '/assets/ir/1.jpg' | relative_url }}" alt="IR sample: my mom and François">
     </div>
     <div class="project-body">
-      <p class="project-type">Photography · Hardware · DIY · Low priority</p>
-      <h2>Infrared &amp; full-spectrum mods</h2>
-      <p>Near-infrared camera mods on an LG G3 and a Sony DSC-H20—sensor teardowns, optics hacks, and Lightroom workflows from a 2020 lockdown build.</p>
+      <p class="project-type">Photography · Hardware · DIY</p>
+      <h2>Infrared &amp; full-spectrum camera mods</h2>
+      <p>A curiosity-driven side project in hardware and imaging: modifying old cameras for near-infrared photography and experimenting with optics, disassembly, and post-processing.</p>
       <ul class="project-tags">
         <li>Photography</li>
         <li>Hardware</li>
