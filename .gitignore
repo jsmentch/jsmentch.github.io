@@ -6,3 +6,6 @@ _site
 # Editor backups
 *~
 \#*\#
+
+# Agent / local tooling
+.tmp-pydeps
