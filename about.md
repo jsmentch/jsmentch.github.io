@@ -4,7 +4,11 @@ title: About
 permalink: /about
 ---
 
-I am a computational neuroscientist / applied scientist and recent PhD graduate of the <a href="http://www.hms.harvard.edu/dms/shbt/">Harvard-MIT Speech and Hearing Bioscience and Technology (SHBT) Program</a>, where I worked with <a href="https://satra.cogitatum.org/group/">Satra Ghosh</a> in the Senseable Intelligence Group at MIT. My work focuses on building and evaluating multimodal and perception-driven systems using large-scale naturalistic datasets, including whole-brain fMRI encoding models and large pediatric speech corpora.
+I am an applied machine learning researcher and computational neuroscientist, recently graduated from the <a href="http://www.hms.harvard.edu/dms/shbt/">Harvard-MIT Speech and Hearing Bioscience and Technology (SHBT) Program</a>, where I worked with <a href="https://satra.cogitatum.org/group/">Satra Ghosh</a> in the Senseable Intelligence Group at MIT.
+
+My work focuses on building and evaluating models for complex real-world signals: speech, audio, movies, gaze, behavior, and brain data. I like problems where the data are rich, messy, human, and not easily reduced to a tidy benchmark.
+
+At MIT and Harvard, I built large-scale predictive modeling workflows for naturalistic fMRI, multimodal feature extraction pipelines for movie stimuli, pediatric speech datasets for machine learning challenges, and research tools for annotating audiovisual data. One through-line across the work is turning ambiguous scientific questions into datasets, models, validation strategies, and interpretable evidence.
 
 Previously, I was a lab manager in the <a href="https://www.robertsonlab.com/">Robertson Lab</a> 
 at Dartmouth, working both there and in the <a href="http://web.mit.edu/bcs/nklab/index.shtml">Kanwisher Lab</a> at MIT, where I designed and implemented VR eye-tracking and salience modeling pipelines to study visual attention. I hold a master's degree in <a href="https://music.dartmouth.edu/graduate">Digital Musics</a> from Dartmouth, where I worked with <a href="http://bregman.dartmouth.edu/~mcasey">Michael Casey</a> on machine learning approaches to neural stimulus reconstruction and music information retrieval.
