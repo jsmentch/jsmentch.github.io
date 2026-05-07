@@ -1,0 +1,46 @@
+---
+layout: default
+---
+
+<main class="main" id="main">
+  <div class="wrap">
+    <article class="project-detail">
+      <a class="back-link" href="{{ '/projects' | relative_url }}">Back to projects</a>
+
+      <header class="project-hero-detail">
+        <div>
+          {% if page.kicker %}
+          <p class="eyebrow">{{ page.kicker }}</p>
+          {% endif %}
+          <h1>{{ page.title }}</h1>
+          {% if page.subtitle %}
+          <p class="lead">{{ page.subtitle }}</p>
+          {% endif %}
+        </div>
+
+        {% if page.stats %}
+        <dl class="project-facts">
+          {% for stat in page.stats %}
+          <div>
+            <dt>{{ stat.label }}</dt>
+            <dd>{{ stat.value }}</dd>
+          </div>
+          {% endfor %}
+        </dl>
+        {% endif %}
+      </header>
+
+      {% if page.links %}
+      <div class="project-links">
+        {% for link in page.links %}
+        <a href="{{ link.url }}" target="_blank" rel="noopener noreferrer">{{ link.label }}</a>
+        {% endfor %}
+      </div>
+      {% endif %}
+
+      <div class="project-detail-content">
+        {{ content }}
+      </div>
+    </article>
+  </div>
+</main>
