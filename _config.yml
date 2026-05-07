@@ -5,7 +5,7 @@
 title: Jeff Mentch
 email: jsmentch@mit.edu
 description: >-
-  Applied scientist building multimodal and perception-driven systems from large-scale real-world data. Harvard–MIT SHBT PhD.
+  Applied scientist building machine learning systems for complex real-world signals: speech, audio, movies, gaze, behavior, and brain data.
 
 ##### for local testing ######  
 # baseurl: ""
@@ -21,6 +21,11 @@ theme_color: black
 
 # Single source for “Resume” links (nav, home, redirects)
 resume_pdf: "/assets/jmentch_resume.pdf"
+
+collections:
+  projects:
+    output: true
+    permalink: /projects/:name/
 
 # Build settings
 markdown: kramdown
