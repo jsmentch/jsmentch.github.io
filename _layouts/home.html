@@ -5,13 +5,55 @@ layout: default
 <main class="main" id="main">
   <div class="wrap">
     <section class="hero">
-      <h1>{{ site.title }}</h1>
+      <p class="eyebrow">Applied ML · Multimodal data · Human perception</p>
+      <h1>Modeling complex signals from people, places, and perception.</h1>
       <p class="tagline">{{ site.description }}</p>
       <div class="hero-actions">
-        <a href="{{ '/about' | relative_url }}" class="btn btn-primary">About me</a>
-        <a href="{{ site.resume_pdf | relative_url }}" class="btn btn-secondary" target="_blank" rel="noopener noreferrer">Resume</a>
+        <a href="{{ '/projects' | relative_url }}" class="btn btn-primary">View projects</a>
+        <a href="{{ '/about' | relative_url }}" class="btn btn-secondary">About</a>
+        <a href="{{ site.resume_pdf | relative_url }}" class="btn btn-ghost" target="_blank" rel="noopener noreferrer">Resume</a>
       </div>
     </section>
+
+    <section class="signal-grid" aria-label="Selected work areas">
+      <article class="signal-card">
+        <span class="signal-kicker">01</span>
+        <h2>Multimodal ML</h2>
+        <p>Vision, audio, speech, movie, and behavioral features turned into model-ready systems.</p>
+      </article>
+      <article class="signal-card">
+        <span class="signal-kicker">02</span>
+        <h2>Human Data</h2>
+        <p>Brain, gaze, speech, and clinical data analyzed with statistical care and domain context.</p>
+      </article>
+      <article class="signal-card">
+        <span class="signal-kicker">03</span>
+        <h2>Research Tools</h2>
+        <p>Annotation platforms, dataset pipelines, and validation workflows for collaborative science.</p>
+      </article>
+    </section>
+
+    <section class="featured-work" aria-labelledby="featured-work-title">
+      <div class="section-heading">
+        <p class="eyebrow">Selected work</p>
+        <h2 id="featured-work-title">A few systems behind the research</h2>
+      </div>
+      <div class="work-list">
+        <a class="work-row" href="{{ '/projects/image2reverb/' | relative_url }}">
+          <span>Image2Reverb</span>
+          <em>Cross-modal acoustic scene synthesis from images</em>
+        </a>
+        <a class="work-row" href="{{ '/projects/naturalistic-encoding/' | relative_url }}">
+          <span>Naturalistic neural encoding</span>
+          <em>Large-scale multimodal models for movie-driven fMRI</em>
+        </a>
+        <a class="work-row" href="{{ '/projects/naturalistic-gaze-salience/' | relative_url }}">
+          <span>VR eye-tracking</span>
+          <em>Attention, salience, and autism-relevant behavioral signals</em>
+        </a>
+      </div>
+    </section>
+
     {% assign trimmed = content | strip %}{% if trimmed != '' %}
     <div class="page-content">
       {{ content }}
