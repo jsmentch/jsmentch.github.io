@@ -85,6 +85,132 @@ wide: true
     </div>
   </a>
 
+  <a class="project-card" id="neuroscout-feature-visualizer" href="{{ '/projects/neuroscout-feature-visualizer/' | relative_url }}">
+    <div class="project-visual project-visual-badge project-visual-badge--viz" aria-hidden="true">
+      <span>p5</span>
+      <small>features · viz</small>
+    </div>
+    <div class="project-body">
+      <p class="project-type">Neuroscience · Data Visualization · JavaScript</p>
+      <h2>Neuroscout Feature Visualizer</h2>
+      <p>A browser-based p5.js tool for exploring AudioSet and other features extracted from naturalistic movie stimuli, built to make high-dimensional annotations easier to inspect and explain.</p>
+      <ul class="project-tags">
+        <li>JavaScript</li>
+        <li>p5.js</li>
+        <li>Data Viz</li>
+        <li>Neuroscout</li>
+      </ul>
+    </div>
+  </a>
+
+  <a class="project-card" id="audiovisual-annotation-platform" href="{{ '/projects/audiovisual-annotation-platform/' | relative_url }}">
+    <div class="project-visual project-visual-badge project-visual-badge--web" aria-hidden="true">
+      <span>Web</span>
+      <small>annotate · ship</small>
+    </div>
+    <div class="project-body">
+      <p class="project-type">Web Tools · Annotation · Research Infrastructure</p>
+      <h2>Audiovisual annotation platform</h2>
+      <p>Built and deployed a flexible web-based platform for labeling naturalistic movie stimuli for downstream neuroimaging, behavioral, and ML studies.</p>
+      <ul class="project-tags">
+        <li>Web App</li>
+        <li>Annotation</li>
+        <li>Research Ops</li>
+        <li>Multimodal Data</li>
+      </ul>
+    </div>
+  </a>
+
+  <a class="project-card" id="gaba-binocular-rivalry" href="{{ '/projects/gaba-binocular-rivalry-j-neurosci/' | relative_url }}">
+    <div class="project-visual project-visual-badge project-visual-badge--pharma" aria-hidden="true">
+      <span>BR</span>
+      <small>GABA · pharma</small>
+    </div>
+    <div class="project-body">
+      <p class="project-type">Psychophysics · Pharmacology · Clinical Research</p>
+      <h2>GABAergic inhibition and perceptual awareness</h2>
+      <p>Co-first-author pharmacology study showing that both GABA_A and GABA_B modulation increased perceptual suppression during binocular rivalry, providing causal evidence linking inhibition to perceptual awareness.</p>
+      <ul class="project-tags">
+        <li>Psychophysics</li>
+        <li>Pharmacology</li>
+        <li>Autism</li>
+        <li>Clinical Studies</li>
+      </ul>
+    </div>
+  </a>
+
+  <a class="project-card" id="binocular-rivalry-eeg-cb" href="{{ '/projects/binocular-rivalry-eeg-current-biology/' | relative_url }}">
+    <div class="project-visual project-visual-badge project-visual-badge--eeg" aria-hidden="true">
+      <span>EEG</span>
+      <small>rivalry · autism</small>
+    </div>
+    <div class="project-body">
+      <p class="project-type">EEG · Autism · Computational Neuroscience</p>
+      <h2>Slower binocular rivalry in the autistic brain</h2>
+      <p>Co-authored EEG study showing slower neural and behavioral rivalry dynamics in autism, with neural signals predicting symptom severity and classifying diagnostic status.</p>
+      <ul class="project-tags">
+        <li>EEG</li>
+        <li>SSVEP</li>
+        <li>Autism</li>
+        <li>Perception</li>
+      </ul>
+    </div>
+  </a>
+
+  <a class="project-card" id="dartmouth-thesis-music" href="{{ '/projects/dartmouth-thesis-naturalistic-music/' | relative_url }}">
+    <div class="project-visual project-visual-badge project-visual-badge--music" aria-hidden="true">
+      <span>MA</span>
+      <small>music · fMRI</small>
+    </div>
+    <div class="project-body">
+      <p class="project-type">Audio · fMRI · Thesis</p>
+      <h2>Naturalistic music and neural representation</h2>
+      <p>Master’s thesis linking naturalistic music stimuli to brain responses using computational modeling and a large-scale audio corpus.</p>
+      <ul class="project-tags">
+        <li>Audio</li>
+        <li>Modeling</li>
+        <li>fMRI</li>
+        <li>Thesis</li>
+      </ul>
+    </div>
+  </a>
+
+  <a class="project-card" id="alzheimers-trials-abington" href="{{ '/projects/alzheimers-clinical-trials-abington/' | relative_url }}">
+    <div class="project-visual project-visual-badge project-visual-badge--clinical" aria-hidden="true">
+      <span>II / III</span>
+      <small>Alzheimer’s trials</small>
+    </div>
+    <div class="project-body">
+      <p class="project-type">Clinical Research · Trials · Translational Medicine</p>
+      <h2>Alzheimer’s clinical trial coordination</h2>
+      <p>Coordinated Phase II/III Alzheimer’s clinical trials, working directly with patients, caregivers, clinicians, and study protocols to support compliant, patient-centered research execution.</p>
+      <ul class="project-tags">
+        <li>Clinical Research</li>
+        <li>Alzheimer’s</li>
+        <li>Trials</li>
+        <li>Operations</li>
+      </ul>
+    </div>
+  </a>
+
+  <a class="project-card" id="deep-sea-marine-biology" href="{{ '/projects/deep-sea-marine-biology/' | relative_url }}">
+    <div class="project-visual project-visual-badge project-visual-badge--field" aria-hidden="true">
+      <span>Field</span>
+      <small>deep sea · bio</small>
+    </div>
+    <div class="project-body">
+      <p class="project-type">Field Research · Biology · Early Work</p>
+      <h2>Deep-sea marine biology</h2>
+      <p>Early research experience that taught me how to work carefully with unfamiliar systems, collect data under constraints, and stay curious outside the path I eventually took into ML and neuroscience.</p>
+      <ul class="project-tags">
+        <li>Fieldwork</li>
+        <li>Biology</li>
+        <li>Research</li>
+        <li>Exploration</li>
+      </ul>
+    </div>
+  </a>
+
   {% comment %} Add new project cards above this row (infrared stays last). {% endcomment %}
   <a class="project-card" id="infrared-camera" href="{{ '/projects/infrared-camera-conversion/' | relative_url }}">
     <div class="project-visual">
