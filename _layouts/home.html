@@ -4,7 +4,7 @@ layout: default
 
 <main class="main" id="main">
   <div class="wrap">
-    <section class="hero">
+    <section class="hero motion-hero">
       <p class="eyebrow">Applied ML · Multimodal data · Human perception</p>
       <h1>Modeling complex signals from people, places, and perception.</h1>
       <p class="tagline">{{ site.description }}</p>
@@ -15,7 +15,7 @@ layout: default
       </div>
     </section>
 
-    <section class="signal-grid" aria-label="Selected work areas">
+    <section class="signal-grid motion-reveal-stagger" aria-label="Selected work areas">
       <article class="signal-card">
         <span class="signal-kicker">01</span>
         <h2>Multimodal ML</h2>
@@ -34,11 +34,11 @@ layout: default
     </section>
 
     <section class="featured-work" aria-labelledby="featured-work-title">
-      <div class="section-heading">
+      <div class="section-heading motion-reveal">
         <p class="eyebrow">Selected work</p>
         <h2 id="featured-work-title">A few systems behind the research</h2>
       </div>
-      <div class="work-list">
+      <div class="work-list motion-reveal-stagger">
         <a class="work-row" href="{{ '/projects/image2reverb/' | relative_url }}">
           <span>Image2Reverb</span>
           <em>Cross-modal acoustic scene synthesis from images</em>

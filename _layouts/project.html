@@ -5,9 +5,9 @@ layout: default
 <main class="main" id="main">
   <div class="wrap">
     <article class="project-detail">
-      <a class="back-link" href="{{ '/projects' | relative_url }}">Back to projects</a>
+      <a class="back-link motion-reveal" href="{{ '/projects' | relative_url }}">Back to projects</a>
 
-      <header class="project-hero-detail">
+      <header class="project-hero-detail motion-reveal">
         <div>
           {% if page.kicker %}
           <p class="eyebrow">{{ page.kicker }}</p>
@@ -31,14 +31,14 @@ layout: default
       </header>
 
       {% if page.links %}
-      <div class="project-links">
+      <div class="project-links motion-reveal">
         {% for link in page.links %}
         <a href="{{ link.url }}" target="_blank" rel="noopener noreferrer">{{ link.label }}</a>
         {% endfor %}
       </div>
       {% endif %}
 
-      <div class="project-detail-content">
+      <div class="project-detail-content motion-reveal">
         {{ content }}
       </div>
     </article>

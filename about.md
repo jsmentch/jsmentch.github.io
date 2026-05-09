@@ -4,6 +4,8 @@ title: About
 permalink: /about
 ---
 
+<div class="motion-reveal" markdown="1">
+
 I am an applied machine learning researcher and computational neuroscientist, recently graduated from the <a href="http://www.hms.harvard.edu/dms/shbt/">Harvard-MIT Speech and Hearing Bioscience and Technology (SHBT) Program</a>, where I worked with <a href="https://satra.cogitatum.org/group/">Satra Ghosh</a> in the Senseable Intelligence Group at MIT.
 
 My work focuses on building and evaluating models for complex real-world signals: speech, audio, movies, gaze, behavior, and brain data. I like problems where the data are rich, messy, human, and not easily reduced to a tidy benchmark.
@@ -16,3 +18,5 @@ at Dartmouth, working both there and in the <a href="http://web.mit.edu/bcs/nkla
 My broader research experience spans <a href="http://www.abingtonneurology.com/">Alzheimer's disease clinical trials</a>, <a href="http://www.personal.psu.edu/crf2/index.html">deep-sea marine biology</a>, <a href="http://www.quanttera.com/aboutus.html">microelectronics</a>, and <a href="https://caglab.org/">genomics</a>. Across domains, a common thread has been the use of quantitative and data-driven methods to model complex biological and physical systems.
 
 Outside of research, I have taken pictures of a Tibetan spaniel named <a href="https://www.instagram.com/francois_xr/">François</a> and enjoy writing and producing <a href="https://mylinks.ai/jeffxr">music</a><a href="https://whisperwindows.com/">.</a>
+
+</div>

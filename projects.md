@@ -5,12 +5,12 @@ permalink: /projects
 wide: true
 ---
 
-<section class="projects-intro">
+<section class="projects-intro motion-reveal">
   <p class="eyebrow">Portfolio</p>
   <p class="lead">A growing map of research systems, machine learning projects, and visual experiments. These are written as project snapshots for now, with room to expand each into a full case study.</p>
 </section>
 
-<div class="project-grid">
+<div class="project-grid motion-reveal-stagger">
   <a class="project-card feature" id="naturalistic-encoding" href="{{ '/projects/naturalistic-encoding/' | relative_url }}">
     <div class="project-visual project-visual-metrics" aria-hidden="true">
       <div class="project-metric">
