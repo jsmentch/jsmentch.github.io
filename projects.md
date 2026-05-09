@@ -1,13 +1,13 @@
 ---
 layout: page
-title: Projects
+title: Projects (Under Construction!)
 permalink: /projects
 wide: true
 ---
 
 <section class="projects-intro motion-reveal">
   <p class="eyebrow">Portfolio</p>
-  <p class="lead">A growing map of research systems, machine learning projects, and visual experiments. These are written as project snapshots for now, with room to expand each into a full case study.</p>
+  <p class="lead">A growing map of research systems, machine learning projects, and visual experiments. Many are written as project snapshots for now, but will be fleshed out soon!</p>
 </section>
 
 <div class="project-grid motion-reveal-stagger">
