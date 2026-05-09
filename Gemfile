@@ -1,6 +1,8 @@
 source "https://rubygems.org"
 
 # Jekyll 3.10 + kramdown 2.3.1+ fix Dependabot alerts (CVE-2020-14001, CVE-2021-28834)
+# Addressable < 2.9.0: ReDoS in URI template matching (GHSA-mc22-5g93-qmf5)
+gem "addressable", ">= 2.9.0"
 gem "jekyll", "~> 3.10"
 gem "kramdown", ">= 2.3.1"
 gem "kramdown-parser-gfm", "~> 1.1"
