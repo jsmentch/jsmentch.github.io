@@ -477,6 +477,16 @@ a:hover {
   text-transform: uppercase;
 }
 
+.project-visual-speech .project-visual-speech-line {
+  display: block;
+  margin-top: 0.2rem;
+  line-height: 1.25;
+}
+
+.project-visual-speech .project-visual-speech-line:first-of-type {
+  margin-top: 0.45rem;
+}
+
 /* Feature card — dual headline stats */
 .project-visual-metrics {
   display: grid;
@@ -611,20 +621,25 @@ a:hover {
 
 .project-visual-badge span {
   color: var(--text);
-  font-size: clamp(1.75rem, 4.5vw, 2.6rem);
+  font-size: clamp(1.35rem, 3.8vw, 2.15rem);
   font-weight: 600;
-  line-height: 1.1;
+  line-height: 1.12;
   letter-spacing: -0.02em;
+  max-width: 100%;
+  padding: 0 0.35rem;
 }
 
 .project-visual-badge small {
   display: block;
   margin-top: 0.5rem;
-  font-size: 0.75rem;
+  font-size: 0.68rem;
   font-weight: 600;
-  letter-spacing: 0.1em;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
   opacity: 0.9;
+  line-height: 1.35;
+  max-width: 100%;
+  padding: 0 0.35rem;
 }
 
 .project-visual-badge--viz {

@@ -54,7 +54,8 @@ wide: true
   <a class="project-card" id="speech-challenge" href="{{ '/projects/pediatric-speech-dataset/' | relative_url }}">
     <div class="project-visual project-visual-speech" aria-hidden="true">
       <span>0.97</span>
-      <small>top AUROC</small>
+      <small class="project-visual-speech-line">Crowd sourced</small>
+      <small class="project-visual-speech-line">Top AUROC</small>
     </div>
     <div class="project-body">
       <p class="project-type">Dataset engineering · Public ML challenge</p>
@@ -71,7 +72,7 @@ wide: true
   <a class="project-card" id="vr-eye-tracking" href="{{ '/projects/naturalistic-gaze-salience/' | relative_url }}">
     <div class="project-visual project-visual-vr" aria-hidden="true">
       <span>360°</span>
-      <small>Gaze · Salience</small>
+      <small>VR · Eye tracking</small>
     </div>
     <div class="project-body">
       <p class="project-type">VR · Eye-tracking · Visual attention</p>
@@ -88,7 +89,7 @@ wide: true
   <a class="project-card" id="neuroscout-feature-visualizer" href="{{ '/projects/neuroscout-feature-visualizer/' | relative_url }}">
     <div class="project-visual project-visual-badge project-visual-badge--viz" aria-hidden="true">
       <span>NS</span>
-      <small>viz · annotate</small>
+      <small>Annotator</small>
     </div>
     <div class="project-body">
       <p class="project-type">Web App · Visualization · Annotation</p>
@@ -105,7 +106,7 @@ wide: true
 
   <a class="project-card" id="gaba-binocular-rivalry" href="{{ '/projects/gaba-binocular-rivalry-j-neurosci/' | relative_url }}">
     <div class="project-visual project-visual-badge project-visual-badge--pharma" aria-hidden="true">
-      <span>BR</span>
+      <span>Rivalry</span>
       <small>GABA · pharma</small>
     </div>
     <div class="project-body">
@@ -141,8 +142,8 @@ wide: true
 
   <a class="project-card" id="dartmouth-thesis-music" href="{{ '/projects/dartmouth-thesis-naturalistic-music/' | relative_url }}">
     <div class="project-visual project-visual-badge project-visual-badge--music" aria-hidden="true">
-      <span>MA</span>
-      <small>music · fMRI</small>
+      <span>Mind/Music</span>
+      <small>Stimulus reconstruction · Mind reading</small>
     </div>
     <div class="project-body">
       <p class="project-type">Stimulus reconstruction · Music · Neural decoding</p>
@@ -159,8 +160,8 @@ wide: true
 
   <a class="project-card" id="alzheimers-trials-abington" href="{{ '/projects/alzheimers-clinical-trials-abington/' | relative_url }}">
     <div class="project-visual project-visual-badge project-visual-badge--clinical" aria-hidden="true">
-      <span>II / III</span>
-      <small>Alzheimer’s trials</small>
+      <span>Phase II/III</span>
+      <small>Clinical trials</small>
     </div>
     <div class="project-body">
       <p class="project-type">Clinical Research · Alzheimer’s · Phase II/III</p>
@@ -177,8 +178,8 @@ wide: true
 
   <a class="project-card" id="deep-sea-marine-biology" href="{{ '/projects/deep-sea-marine-biology/' | relative_url }}">
     <div class="project-visual project-visual-badge project-visual-badge--field" aria-hidden="true">
-      <span>Field</span>
-      <small>deep sea · bio</small>
+      <span>Marine biology</span>
+      <small>Deep sea · Coral · Ecology</small>
     </div>
     <div class="project-body">
       <p class="project-type">Fieldwork · Deep Sea · Coral</p>
@@ -195,8 +196,8 @@ wide: true
 
   <a class="project-card" id="gom-mosaic-sonification" href="{{ '/projects/gom-mosaic-sonification/' | relative_url }}">
     <div class="project-visual project-visual-badge project-visual-badge--soni" aria-hidden="true">
-      <span>GOM</span>
-      <small>mosaic · sonify</small>
+      <span>Sonification</span>
+      <small>p5.js · visualization · biology</small>
     </div>
     <div class="project-body">
       <p class="project-type">Data sonification · Visualization · Marine science</p>
