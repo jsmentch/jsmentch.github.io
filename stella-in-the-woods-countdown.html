@@ -69,6 +69,7 @@ permalink: /stella-in-the-woods-countdown/
       .meadow,
       .sparkles,
       .burger-field,
+      .celebration-layer,
       .clouds {
         position: absolute;
         inset: 0;
@@ -338,6 +339,40 @@ permalink: /stella-in-the-woods-countdown/
         bottom: 24%;
       }
 
+      .celebration-layer {
+        z-index: 3;
+        overflow: hidden;
+      }
+
+      .confetti-piece {
+        position: absolute;
+        left: var(--x);
+        bottom: -1rem;
+        width: var(--w);
+        height: var(--h);
+        border-radius: 999px;
+        background: var(--color);
+        opacity: 0;
+        transform: translate3d(0, 0, 0) rotate(0deg);
+        animation: confetti-launch var(--duration) cubic-bezier(0.16, 0.9, 0.28, 1) forwards;
+        animation-delay: var(--delay);
+        box-shadow: 0 0 0.6rem rgba(255, 255, 255, 0.4);
+      }
+
+      .burger-burst {
+        position: absolute;
+        left: var(--x);
+        bottom: -5rem;
+        width: var(--size);
+        opacity: 0;
+        filter:
+          drop-shadow(0 1rem 1.4rem rgba(33, 114, 119, 0.2))
+          drop-shadow(0 0 1rem rgba(255, 255, 255, 0.62));
+        transform-origin: center;
+        animation: burger-launch var(--duration) cubic-bezier(0.13, 0.95, 0.22, 1) forwards;
+        animation-delay: var(--delay);
+      }
+
       .countdown-content {
         position: relative;
         z-index: 2;
@@ -416,6 +451,32 @@ permalink: /stella-in-the-woods-countdown/
         justify-content: center;
         gap: 0.72rem;
         margin: 2.1rem auto 1.9rem;
+      }
+
+      .redirect-message {
+        display: none;
+        margin: 2.35rem auto 1.8rem;
+        color: #176070;
+        font-family: Georgia, "Times New Roman", serif;
+        font-size: clamp(2.35rem, 9vw, 5.4rem);
+        font-weight: 900;
+        line-height: 0.95;
+        text-shadow:
+          0 2px 0 rgba(255, 255, 255, 0.72),
+          0 1rem 2.4rem rgba(66, 201, 244, 0.24);
+      }
+
+      .is-arrived .date,
+      .is-arrived .countdown {
+        display: none;
+      }
+
+      .is-arrived .redirect-message {
+        display: block;
+      }
+
+      .is-arrived .mood {
+        color: #27616a;
       }
 
       .time-unit {
@@ -589,6 +650,48 @@ permalink: /stella-in-the-woods-countdown/
         }
       }
 
+      @keyframes confetti-launch {
+        0% {
+          opacity: 0;
+          transform: translate3d(0, 0, 0) rotate(0deg) scale(0.65);
+        }
+
+        12% {
+          opacity: 1;
+        }
+
+        58% {
+          opacity: 1;
+          transform: translate3d(var(--mid-x), var(--mid-y), 0) rotate(var(--spin)) scale(1);
+        }
+
+        100% {
+          opacity: 0;
+          transform: translate3d(var(--end-x), var(--end-y), 0) rotate(calc(var(--spin) * 1.8)) scale(0.7);
+        }
+      }
+
+      @keyframes burger-launch {
+        0% {
+          opacity: 0;
+          transform: translate3d(0, 0, 0) rotate(0deg) scale(0.55);
+        }
+
+        12% {
+          opacity: 1;
+        }
+
+        55% {
+          opacity: 1;
+          transform: translate3d(var(--mid-x), var(--mid-y), 0) rotate(var(--spin)) scale(1);
+        }
+
+        100% {
+          opacity: 0;
+          transform: translate3d(var(--end-x), var(--end-y), 0) rotate(calc(var(--spin) * 1.5)) scale(0.78);
+        }
+      }
+
       @media (max-width: 780px) {
         .countdown-page {
           padding-top: 3.25rem;
@@ -749,6 +852,10 @@ permalink: /stella-in-the-woods-countdown/
           animation: none !important;
           transition: none !important;
         }
+
+        .is-arrived .celebration-layer {
+          display: none;
+        }
       }
     </style>
   </head>
@@ -822,6 +929,7 @@ permalink: /stella-in-the-woods-countdown/
             <path fill="#fff7b7" opacity="0.75" d="M47 92c21 5 62 5 83 0-14 9-70 10-83 0Z"/>
           </svg>
         </div>
+        <div class="celebration-layer" aria-hidden="true"></div>
       </div>
 
       <section class="countdown-content">
@@ -855,6 +963,7 @@ permalink: /stella-in-the-woods-countdown/
             <span class="time-label">Seconds</span>
           </div>
         </div>
+        <p class="redirect-message" aria-live="polite">Redirecting...</p>
 
         <p class="domain">JeffMentch.com</p>
         <p class="secret-note">When the cat is away, the mice come out to play. See you among the stars at Veggie Galaxy.</p>
@@ -875,6 +984,11 @@ permalink: /stella-in-the-woods-countdown/
     <script>
       (function () {
         var target = new Date("2026-06-19T00:00:00-04:00").getTime();
+        var redirectUrl = "https://www.veggiegalaxy.com/";
+        var page = document.querySelector(".countdown-page");
+        var mood = document.querySelector(".mood");
+        var celebrationLayer = document.querySelector(".celebration-layer");
+        var redirectTimerStarted = false;
         var values = {
           days: document.querySelector('[data-countdown-value="days"]'),
           hours: document.querySelector('[data-countdown-value="hours"]'),
@@ -886,8 +1000,87 @@ permalink: /stella-in-the-woods-countdown/
           return String(number).padStart(2, "0");
         }
 
+        function setStyleVars(element, vars) {
+          Object.keys(vars).forEach(function (name) {
+            element.style.setProperty(name, vars[name]);
+          });
+        }
+
+        function launchConfetti() {
+          if (!celebrationLayer) return;
+
+          var colors = ["#ff5f8a", "#ffcf52", "#56c972", "#42c9f4", "#8b69ff", "#ff9f45", "#ffffff"];
+          var pieces = 72;
+          for (var index = 0; index < pieces; index += 1) {
+            var piece = document.createElement("span");
+            var start = 4 + Math.random() * 92;
+            var drift = (Math.random() * 52 - 26).toFixed(1) + "vw";
+            var peak = (-58 - Math.random() * 34).toFixed(1) + "vh";
+            var fall = (-24 - Math.random() * 45).toFixed(1) + "vh";
+            var spin = (Math.random() * 900 - 450).toFixed(0) + "deg";
+
+            piece.className = "confetti-piece";
+            setStyleVars(piece, {
+              "--x": start.toFixed(1) + "%",
+              "--w": (0.28 + Math.random() * 0.4).toFixed(2) + "rem",
+              "--h": (0.55 + Math.random() * 0.75).toFixed(2) + "rem",
+              "--mid-x": (Math.random() * 28 - 14).toFixed(1) + "vw",
+              "--mid-y": peak,
+              "--end-x": drift,
+              "--end-y": fall,
+              "--spin": spin,
+              "--duration": (2.25 + Math.random() * 0.75).toFixed(2) + "s",
+              "--delay": (Math.random() * 0.34).toFixed(2) + "s",
+              "--color": colors[index % colors.length]
+            });
+            celebrationLayer.appendChild(piece);
+          }
+        }
+
+        function launchBurgers() {
+          if (!celebrationLayer) return;
+
+          var template = document.querySelector(".burger-one");
+          if (!template) return;
+
+          for (var index = 0; index < 10; index += 1) {
+            var burger = template.cloneNode(true);
+            var start = 8 + Math.random() * 84;
+            var endDrift = (Math.random() * 46 - 23).toFixed(1) + "vw";
+            burger.removeAttribute("aria-label");
+            burger.setAttribute("aria-hidden", "true");
+            burger.className.baseVal = "burger-burst";
+            setStyleVars(burger, {
+              "--x": start.toFixed(1) + "%",
+              "--size": (3.2 + Math.random() * 2.7).toFixed(2) + "rem",
+              "--mid-x": (Math.random() * 26 - 13).toFixed(1) + "vw",
+              "--mid-y": (-56 - Math.random() * 30).toFixed(1) + "vh",
+              "--end-x": endDrift,
+              "--end-y": (-18 - Math.random() * 44).toFixed(1) + "vh",
+              "--spin": (Math.random() * 720 - 360).toFixed(0) + "deg",
+              "--duration": (2.45 + Math.random() * 0.45).toFixed(2) + "s",
+              "--delay": (Math.random() * 0.24).toFixed(2) + "s"
+            });
+            celebrationLayer.appendChild(burger);
+          }
+        }
+
+        function beginRedirect() {
+          if (redirectTimerStarted) return;
+          redirectTimerStarted = true;
+          page.classList.add("is-arrived");
+          mood.textContent = "The countdown is complete. See you among the stars at Veggie Galaxy.";
+          document.title = "Redirecting... - Stella in the Woods";
+          launchConfetti();
+          launchBurgers();
+          window.setTimeout(function () {
+            window.location.href = redirectUrl;
+          }, 3000);
+        }
+
         function updateCountdown() {
-          var remaining = Math.max(0, target - Date.now());
+          var rawRemaining = target - Date.now();
+          var remaining = Math.max(0, rawRemaining);
           var secondsTotal = Math.floor(remaining / 1000);
           var days = Math.floor(secondsTotal / 86400);
           var hours = Math.floor((secondsTotal % 86400) / 3600);
@@ -899,10 +1092,16 @@ permalink: /stella-in-the-woods-countdown/
           values.minutes.textContent = pad(minutes);
           values.seconds.textContent = pad(seconds);
           document.title = pad(days) + ":" + pad(hours) + ":" + pad(minutes) + ":" + pad(seconds) + " - Stella in the Woods";
+
+          if (rawRemaining <= 0) {
+            beginRedirect();
+          }
         }
 
         updateCountdown();
-        window.setInterval(updateCountdown, 1000);
+        if (!redirectTimerStarted) {
+          window.setInterval(updateCountdown, 1000);
+        }
       })();
     </script>
   </body>
