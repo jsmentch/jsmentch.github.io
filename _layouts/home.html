@@ -4,14 +4,100 @@ layout: default
 
 <main class="main" id="main">
   <div class="wrap">
-    <section class="hero motion-hero">
-      <p class="eyebrow">Applied ML · Multimodal data · Human perception</p>
-      <h1>Modeling complex signals from people, places, and perception.</h1>
-      <p class="tagline">{{ site.description }}</p>
-      <div class="hero-actions">
-        <a href="{{ '/projects' | relative_url }}" class="btn btn-primary">View projects</a>
-        <a href="{{ '/about' | relative_url }}" class="btn btn-secondary">About</a>
-        <a href="{{ site.resume_pdf | relative_url }}" class="btn btn-ghost" target="_blank" rel="noopener noreferrer">Resume</a>
+    <section class="hero motion-hero" aria-labelledby="hero-title">
+      <div class="hero-copy">
+        <p class="eyebrow">Applied ML / Neuroscience / Multimodal systems</p>
+        <h1 id="hero-title">Jeff Mentch</h1>
+        <p class="tagline">{{ site.description }}</p>
+        <div class="hero-actions">
+          <a href="{{ '/projects' | relative_url }}" class="btn btn-primary">View projects</a>
+          <a href="{{ '/about' | relative_url }}" class="btn btn-secondary">About</a>
+          <a href="{{ site.resume_pdf | relative_url }}" class="btn btn-ghost" target="_blank" rel="noopener noreferrer">Resume</a>
+        </div>
+        <dl class="hero-stats" aria-label="Research focus">
+          <div>
+            <dt>Signals</dt>
+            <dd>Audio / vision / gaze / fMRI</dd>
+          </div>
+          <div>
+            <dt>Mode</dt>
+            <dd>Models, datasets, tooling</dd>
+          </div>
+        </dl>
+      </div>
+
+      <div class="hero-visual" aria-hidden="true">
+        <div class="instrument-card instrument-card-main">
+          <div class="instrument-topline">
+            <span>encoding model</span>
+            <span>offline fit</span>
+          </div>
+          <div class="encoding-diagram">
+            <div class="feature-stack">
+              <span class="diagram-label">stimulus features</span>
+              <span class="feature-band feature-band-a"></span>
+              <span class="feature-band feature-band-b"></span>
+              <span class="feature-band feature-band-c"></span>
+              <span class="feature-band feature-band-d"></span>
+            </div>
+            <span class="pipeline-link pipeline-link-a"></span>
+            <div class="model-node">
+              <span class="diagram-label">fit weights</span>
+              <span class="matrix-row matrix-row-a"></span>
+              <span class="matrix-row matrix-row-b"></span>
+              <span class="matrix-row matrix-row-c"></span>
+              <small>ridge model</small>
+            </div>
+            <span class="pipeline-link pipeline-link-b"></span>
+            <div class="cortex-output">
+              <span class="diagram-label">predicted cortex</span>
+              <svg class="cortex-map" viewBox="0 0 180 128" role="presentation" focusable="false">
+                <path class="cortex-outline" d="M29 79 C19 57 30 33 55 24 C76 16 103 18 124 28 C151 41 161 68 151 91 C141 115 109 122 80 115 C56 109 38 99 29 79 Z"></path>
+                <path class="cortex-fold" d="M50 66 C68 53 89 54 110 62 C126 68 137 79 143 91"></path>
+                <path class="cortex-fold" d="M57 38 C75 45 88 56 96 73 C103 87 112 96 130 100"></path>
+                <path class="cortex-fold" d="M43 88 C61 83 78 83 96 90 C110 96 121 105 134 106"></path>
+                <path class="cortex-activation cortex-activation-a" d="M63 53 C78 43 100 45 117 56"></path>
+                <path class="cortex-activation cortex-activation-b" d="M54 84 C76 74 99 78 124 94"></path>
+                <path class="cortex-activation cortex-activation-c" d="M91 31 C112 33 132 46 141 65"></path>
+              </svg>
+            </div>
+          </div>
+          <div class="instrument-readout">
+            <span>fMRI</span>
+            <span>speech</span>
+            <span>movies</span>
+            <span>gaze</span>
+          </div>
+        </div>
+        <div class="instrument-card instrument-card-small">
+          <span>171</span>
+          <small>participants</small>
+        </div>
+        <div class="instrument-card instrument-card-accent">
+          <span>280M+</span>
+          <small>model fits</small>
+        </div>
+      </div>
+    </section>
+
+    <section class="domain-ticker motion-reveal" aria-label="Signals and methods">
+      <div class="ticker-track">
+        <span>speech</span>
+        <span>audio</span>
+        <span>movies</span>
+        <span>brain data</span>
+        <span>gaze</span>
+        <span>behavior</span>
+        <span>research tools</span>
+        <span>validation</span>
+        <span>speech</span>
+        <span>audio</span>
+        <span>movies</span>
+        <span>brain data</span>
+        <span>gaze</span>
+        <span>behavior</span>
+        <span>research tools</span>
+        <span>validation</span>
       </div>
     </section>
 
@@ -36,20 +122,23 @@ layout: default
     <section class="featured-work" aria-labelledby="featured-work-title">
       <div class="section-heading motion-reveal">
         <p class="eyebrow">Selected work</p>
-        <h2 id="featured-work-title">A few systems behind the research</h2>
+        <h2 id="featured-work-title">Systems behind the research</h2>
       </div>
       <div class="work-list motion-reveal-stagger">
-        <a class="work-row" href="{{ '/projects/image2reverb/' | relative_url }}">
-          <span>Image2Reverb</span>
-          <em>Cross-modal acoustic scene synthesis from images</em>
-        </a>
         <a class="work-row" href="{{ '/projects/naturalistic-encoding/' | relative_url }}">
+          <strong>01</strong>
           <span>Naturalistic neural encoding</span>
           <em>Large-scale multimodal models for movie-driven fMRI</em>
         </a>
         <a class="work-row" href="{{ '/projects/naturalistic-gaze-salience/' | relative_url }}">
+          <strong>02</strong>
           <span>VR eye-tracking</span>
           <em>Attention, salience, and autism-relevant behavioral signals</em>
+        </a>
+        <a class="work-row" href="{{ '/projects/image2reverb/' | relative_url }}">
+          <strong>03</strong>
+          <span>Image2Reverb</span>
+          <em>Cross-modal acoustic scene synthesis from images</em>
         </a>
       </div>
     </section>
