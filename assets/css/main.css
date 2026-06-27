@@ -1330,6 +1330,17 @@ img {
   color: #5eead4;
 }
 
+.project-visual-badge--tensor {
+  background:
+    linear-gradient(145deg, rgba(167, 139, 250, 0.16), transparent 48%),
+    linear-gradient(225deg, rgba(110, 231, 183, 0.08), transparent 52%),
+    #0d0e12;
+}
+
+.project-visual-badge--tensor small {
+  color: #c4b5fd;
+}
+
 .figure-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(12rem, 1fr));

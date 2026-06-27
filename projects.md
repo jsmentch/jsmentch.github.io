@@ -86,6 +86,24 @@ wide: true
     </div>
   </a>
 
+  <a class="project-card" id="tensor-decomposition-ohbm-2023" href="{{ '/projects/tensor-decomposition-ohbm-2023/' | relative_url }}">
+    <div class="project-visual project-visual-badge project-visual-badge--tensor" aria-hidden="true">
+      <span>NASCAR</span>
+      <small>Tensor · OHBM 2023</small>
+    </div>
+    <div class="project-body">
+      <p class="project-type">OHBM 2023 · Oral · Naturalistic fMRI</p>
+      <h2>Brain networks via tensor decomposition</h2>
+      <p>Applied NASCAR tensor decomposition to naturalistic movie-viewing and resting-state fMRI in a clinically rich cohort, identifying shared brain networks without ICA-style independence assumptions.</p>
+      <ul class="project-tags">
+        <li>fMRI</li>
+        <li>Tensor decomposition</li>
+        <li>Naturalistic stimuli</li>
+        <li>Autism</li>
+      </ul>
+    </div>
+  </a>
+
   <a class="project-card" id="neuroscout-feature-visualizer" href="{{ '/projects/neuroscout-feature-visualizer/' | relative_url }}">
     <div class="project-visual project-visual-badge project-visual-badge--viz" aria-hidden="true">
       <span>NS</span>
