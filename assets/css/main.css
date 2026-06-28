@@ -984,6 +984,9 @@ img {
 }
 
 .about-photo--lead img {
+  display: block;
+  width: 100%;
+  height: auto;
   border-radius: var(--radius);
 }
 
@@ -1499,14 +1502,6 @@ img {
   max-width: var(--content-width);
 }
 
-.project-detail-content .project-figure:not(.project-figure--compact),
-.project-detail-content .project-figure-scroll,
-.project-detail-content .project-disclosure {
-  width: min(var(--max-width), calc(100vw - 2 * var(--space)));
-  max-width: none;
-  margin-left: calc(-0.5 * max(0px, min(var(--max-width), calc(100vw - 2 * var(--space))) - var(--content-width)));
-}
-
 .project-detail-content h2 {
   margin-top: 2.25rem;
 }
@@ -1522,17 +1517,11 @@ img {
 
 .project-figure img {
   display: block;
-  width: auto;
-  max-width: 100%;
+  width: 100%;
   height: auto;
   border: 1px solid var(--line);
   border-radius: var(--radius);
   background: var(--panel);
-}
-
-.project-figure--compact img {
-  width: 100%;
-  max-width: 100%;
 }
 
 .project-figure figcaption {
@@ -1573,6 +1562,12 @@ img {
   max-width: none;
   min-width: 0;
   height: auto;
+}
+
+.project-figure-scroll .project-figure--wide figcaption {
+  position: sticky;
+  left: 0;
+  max-width: min(46rem, 88vw);
 }
 
 .project-approach-grid {
