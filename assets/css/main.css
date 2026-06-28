@@ -599,6 +599,12 @@ img {
   white-space: nowrap;
 }
 
+.diagram-label--stacked {
+  white-space: normal;
+  text-align: center;
+  line-height: 1.25;
+}
+
 .feature-band {
   display: block;
   height: 0.56rem;
