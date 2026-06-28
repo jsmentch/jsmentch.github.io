@@ -12,7 +12,7 @@ wide: true
 
 <div class="project-grid motion-reveal-stagger">
   <a class="project-card feature" id="naturalistic-encoding" href="{{ '/projects/naturalistic-encoding/' | relative_url }}">
-    <div class="project-visual project-visual-metrics" aria-hidden="true">
+    <div class="project-visual project-visual-metrics project-visual-metrics--triple" aria-hidden="true">
       <div class="project-metric">
         <span class="project-metric-value">171</span>
         <small class="project-metric-label">participants</small>
@@ -22,11 +22,16 @@ wide: true
         <span class="project-metric-value">280M+</span>
         <small class="project-metric-label">model fits</small>
       </div>
+      <span class="project-metric-sep" aria-hidden="true"></span>
+      <div class="project-metric">
+        <span class="project-metric-value project-metric-value--text">eLife</span>
+        <small class="project-metric-label">reviewed preprint</small>
+      </div>
     </div>
     <div class="project-body">
-      <p class="project-type">PhD thesis · Preregistered fMRI · Multimodal ML</p>
+      <p class="project-type">eLife reviewed preprint · PhD thesis · Multimodal fMRI</p>
       <h2>Naturalistic neural encoding in autism</h2>
-      <p>Built a preregistered multimodal modeling pipeline linking movie features to whole-brain fMRI in 171 youth, revealing where sensory and higher-level representations diverge in autism.</p>
+      <p>Built a preregistered multimodal encoding pipeline linking naturalistic movie features to whole-brain fMRI in 171 youth, revealing altered visual feature weighting in autism-related pSTS and social/integration cortex.</p>
       <ul class="project-tags">
         <li>Python</li>
         <li>Predictive modeling</li>

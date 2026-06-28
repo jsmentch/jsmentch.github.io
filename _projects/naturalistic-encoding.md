@@ -1,130 +1,169 @@
 ---
 layout: project
 title: Naturalistic neural encoding in autism
-kicker: PhD thesis · Preregistered fMRI · Multimodal ML
+description: >-
+  A PhD thesis and eLife reviewed preprint project using multimodal encoding models to link naturalistic movie features with whole-brain fMRI responses in autism.
+kicker: PhD thesis · eLife reviewed preprint · Naturalistic fMRI · Multimodal modeling
 subtitle: >-
-  I built a large-scale predictive modeling pipeline that links rich, real-world movie features to whole-brain fMRI responses in children and adolescents, then used it to test how sensory and high-level information are represented differently in autistic and non-autistic youths.
+  I built a preregistered multimodal modeling pipeline that linked real-world movie features to whole-brain fMRI responses in 171 children and adolescents. The project tested where sensory and higher-level visual information are represented differently in autism, revealing a shift in feature weighting in pSTS and nearby social/integration cortex rather than a broad early-sensory enhancement effect.
 stats:
   - label: Dataset
-    value: 171 children and adolescents from the Healthy Brain Network (HBN)
-  - label: Data type
-    value: Naturalistic movie-viewing surface fMRI
+    value: 171 children and adolescents from the Healthy Brain Network
+  - label: Data
+    value: 15-minute naturalistic movie-viewing fMRI
   - label: Modeling
-    value: Multimodal stacked encoding models
-  - label: Statistical design
-    value: Preregistered analysis, FDR-controlled inference, multi-threshold motion QC
-  - label: Focus
-    value: Feature engineering, predictive modeling, validation, interpretable inference, large-scale neural data
+    value: Stacked ridge regression encoding models
+  - label: Scale
+    value: 280M+ grayordinate-wise model fits
+  - label: Inference
+    value: Cross-validation, permutation testing, FDR correction, preregistered hypotheses, multi-threshold motion QC
+  - label: Output
+    value: eLife reviewed preprint + Harvard dissertation
 links:
+  - label: eLife reviewed preprint
+    url: "https://elifesciences.org/reviewed-preprints/111008"
+  - label: DOI
+    url: "https://doi.org/10.7554/eLife.111008.1"
+  - label: PubMed
+    url: "https://pubmed.ncbi.nlm.nih.gov/41929098/"
+  - label: bioRxiv
+    url: "https://www.biorxiv.org/content/10.64898/2026.03.23.713749v1"
+  - label: Dissertation
+    url: "https://www.proquest.com/docview/3308462552?pq-origsite=gscholar&fromopenview=true&sourcetype=Dissertations%20&%20Theses"
   - label: Preregistration (primary)
     url: "https://osf.io/h92gr"
   - label: Preregistration (revision)
     url: "https://osf.io/47kj6"
 ---
 
-## Why this project matters
+## Project snapshot
 
-Most neuroscience studies simplify the world into isolated stimuli and tightly controlled tasks. This project asked whether we could instead model brain responses to complex, naturalistic audiovisual input at scale, while still maintaining interpretable, statistically rigorous conclusions.
+Many neuroscience studies use simplified stimuli or tightly controlled tasks. I wanted to test whether we could model brain responses to rich, naturalistic audiovisual input while still making statistically rigorous and interpretable claims.
 
-From a machine learning perspective, this was a real-world multimodal prediction problem:
-
-- high-dimensional, noisy data
-- multiple competing feature spaces
-- strict validation requirements
-- interpretable model decomposition
-- inference under heavy multiple-comparison burden
-- robustness to data quality variation
+This became a large-scale supervised learning and inference problem: transform continuous movies into aligned feature spaces, predict cortical fMRI responses, estimate how different feature classes contribute to those predictions, and test whether those representational profiles differ by diagnosis, age, and symptom burden.
 
 ## What I built
 
-I developed an end-to-end modeling pipeline that:
+- Extracted and aligned multimodal audio and visual features from naturalistic movie stimuli.
+- Built feature banks spanning low-level sensory structure and higher-level semantic/social content.
+- Fit whole-brain encoding models to predict cortical fMRI responses from each feature space.
+- Combined feature-specific models using stacked encoding to estimate relative feature weighting.
+- Tested group, developmental, and symptom-related effects using preregistered analyses, FDR correction, and multiple motion-quality thresholds.
+- Validated model behavior against expected sensory organization before interpreting autism-related differences.
 
-- transformed long-form movies into aligned audio and visual feature timelines
-- constructed multimodal feature spaces spanning low-level to high-level information
-- fit whole-brain cortical encoding models that predicted fMRI responses from those features
-- quantified which kinds of features best explained activity across cortex
-- tested whether those representation profiles differed by diagnosis, age, and symptom burden
-- evaluated robustness across multiple motion-quality thresholds to rule out artifacts
+## Modeling pipeline
 
-In practical terms, this was a large supervised learning and inference pipeline built for messy real-world human data.
+The core technical task was to turn a naturalistic movie into structured feature timelines, predict brain responses from each feature space, and compare how different kinds of information were weighted across cortex.
 
-## Core technical components
+<figure class="project-figure">
+  <img src="{{ '/assets/projects/naturalistic-encoding/methods_modelAV.jpg' | relative_url }}" alt="Schematic of a stacked encoding model where movie stimuli are transformed into audio and visual features, separate encoding models predict brain activity, and a stacked model combines them to estimate feature weights." loading="lazy" width="1024" height="567">
+  <figcaption>
+    Stacked encoding model pipeline. Continuous movie stimuli were converted into synchronized audio and visual feature spaces. Feature-specific encoding models predicted fMRI responses, and a stacked model estimated how strongly each feature space contributed to brain activity.
+    <span class="project-figure-source">Source: eLife reviewed preprint / dissertation</span>
+  </figcaption>
+</figure>
 
-### Multimodal feature engineering
+## Key result
 
-I generated synchronized feature spaces from continuous movie stimuli, spanning:
+The main finding was not a simple global increase in sensory responsiveness. Instead, autism-related differences were localized to how higher-order visual information was weighted in social and multisensory integration regions.
 
-- low-level visual structure such as luminance and motion energy
-- higher-level visual content such as faces and bodies
-- low-level audio structure
-- higher-level auditory categories such as speech and music
+- No evidence supported the preregistered prediction that autism would show enhanced low-level encoding in primary sensory cortices.
+- In pSTS and nearby social/integration cortex, autistic participants showed a relative shift toward lower-level over higher-level visual feature encoding.
+- High–low visual weighting in pSTS tracked autism-related social phenotype.
+- Audio–visual modality balance was broadly conserved across groups.
+- Developmental effects were prominent, showing strong age-related changes in encoding and modality tuning.
 
-### Predictive modeling
+<details class="project-disclosure">
+  <summary>See technical result summary</summary>
+  <div class="project-disclosure-body">
+    <div class="project-figure-scroll">
+      <figure class="project-figure project-figure--wide">
+        <img src="{{ '/assets/projects/naturalistic-encoding/fig3.jpg' | relative_url }}" alt="Heatmap summarizing statistical effects across cortical parcels for diagnosis, social responsiveness scores, and sensory scores, with rows for visual and audio model metrics and columns for perceptual brain regions." loading="lazy" width="1024" height="549">
+        <figcaption>
+          Summary of diagnosis-, social-phenotype-, and sensory-phenotype-related effects across cortical parcels and model metrics. The strongest interpretable pattern was a shift in visual high- versus low-level feature weighting in pSTS and adjacent social/integration regions.
+          <span class="project-figure-note">Symbols indicate effects that survived statistical thresholds across motion-quality sensitivity analyses.</span>
+          <span class="project-figure-source">Source: eLife reviewed preprint / dissertation</span>
+        </figcaption>
+      </figure>
+    </div>
+  </div>
+</details>
 
-I used stacked encoding models to predict cortical fMRI time series from these feature sets. This allowed the models to estimate both:
+## Model validation
 
-- overall predictive performance
-- relative weighting across competing feature banks, such as low- versus high-level visual information or visual versus auditory information
+Before interpreting group differences, I checked whether the model behaved as expected across known sensory systems.
 
-### Statistical inference and validation
+<div class="project-figure-scroll">
+  <figure class="project-figure project-figure--wide">
+    <img src="{{ '/assets/projects/naturalistic-encoding/fig2_audiovsvisual.jpg' | relative_url }}" alt="Box plots and cortical surface maps showing visual versus auditory perceptual preference across cortical parcels, with visual preference in visual regions and auditory preference in auditory regions." loading="lazy" width="1024" height="266">
+    <figcaption>
+      Model-derived auditory versus visual feature weighting recovered expected sensory organization across cortical regions, providing a validation check before testing autism-related group differences.
+      <span class="project-figure-source">Source: eLife reviewed preprint / dissertation</span>
+    </figcaption>
+  </figure>
+</div>
 
-The analysis was designed to prioritize rigor:
+## Technical approach
 
-- hypotheses and analysis choices were preregistered before outcome analysis
-- group effects were tested at the parcel/ROI level
-- false discovery rate correction was applied across cortex
-- analyses were repeated under multiple framewise-displacement thresholds to assess sensitivity to motion and data quality
-- aggregate model behavior was first validated against known sensory hierarchies before testing group differences
+<div class="project-approach-grid">
+  <div class="project-approach-card">
+    <h3>Multimodal feature engineering</h3>
+    <p>Converted continuous movie stimuli into synchronized visual and auditory feature timelines, including low-level visual structure, higher-level visual content, low-level audio, speech/music, and other interpretable feature classes.</p>
+  </div>
+  <div class="project-approach-card">
+    <h3>Predictive modeling</h3>
+    <p>Fit feature-specific ridge encoding models and combined them with stacked models to estimate both predictive performance and the relative contribution of competing feature banks.</p>
+  </div>
+  <div class="project-approach-card">
+    <h3>Statistical validation</h3>
+    <p>Used held-out prediction, permutation testing, FDR-controlled inference, preregistered hypotheses, and repeated motion-threshold analyses to separate robust effects from noise and data-quality artifacts.</p>
+  </div>
+  <div class="project-approach-card">
+    <h3>Interpretability</h3>
+    <p>Reduced complex model outputs into interpretable cortical summaries, feature-weighting metrics, visualizations, and plain-language conclusions.</p>
+  </div>
+</div>
 
-## Key findings
+## Scientific framing
 
-The main result was not a simple global difference in sensory responsiveness. Instead, the data supported a more specific story about where and how information weighting changes.
+This study translated long-standing theories of autistic perception into testable model comparisons: low- versus high-level feature encoding and auditory versus visual feature weighting during movie viewing.
 
-### Main conclusions
+<figure class="project-figure project-figure--compact">
+  <img src="{{ '/assets/projects/naturalistic-encoding/fig1_wcc_epf.jpg' | relative_url }}" alt="Conceptual diagram contrasting weak central coherence, enhanced perceptual functioning, visual dominance, and possible auditory dominance theories of perception in autism." loading="lazy" width="592" height="1024">
+  <figcaption>
+    The project contrasted theories of autistic perception: whether differences reflect enhanced low-level sensory encoding, reduced integration of higher-level information, or altered balance between auditory and visual information during naturalistic perception.
+    <span class="project-figure-source">Source: eLife reviewed preprint / dissertation</span>
+  </figcaption>
+</figure>
 
-- I found no support for the preregistered hypothesis that autism would show enhanced low-level encoding in primary sensory cortices.
-- In higher-order regions, especially posterior superior temporal sulcus (pSTS) and nearby integrative cortex, autistic participants showed a relative shift toward lower-level over higher-level visual feature weighting.
-- Exploratory analyses suggested reduced high-level visual encoding in socially relevant and face-sensitive cortical parcels.
-- A preregistered high–low weighting gradient in STS tracked autism-related social phenotype.
-- Visual–auditory modality balance in primary sensory regions was largely preserved.
-- Developmental effects were prominent, with strong age-related changes in encoding and modality tuning.
+## Why this matters beyond neuroscience
 
-### Interpretation
+For me, this project was also a testbed for applied machine learning on messy, high-dimensional human data.
 
-The results were more consistent with differences in downstream integration and weighting of information than with a broad early-sensory enhancement account.
-
-## Why this is relevant outside academia
-
-This project demonstrates skills that transfer directly to applied ML and data science roles:
-
-- building predictive pipelines for large, noisy, multimodal datasets
-- turning unstructured real-world input into analysis-ready features
-- designing models that are both accurate and interpretable
-- validating systems against expected structure before drawing substantive conclusions
-- communicating nuanced results, including negative findings, without oversimplifying
-- managing tradeoffs between data quality, sample size, and statistical confidence
-- working with preregistration, reproducibility, and transparent analytical decision-making
+- Built predictive pipelines for noisy multimodal time-series data.
+- Translated unstructured real-world inputs into analysis-ready features.
+- Designed interpretable models rather than treating prediction as a black box.
+- Balanced data quality, sample size, model complexity, and statistical confidence.
+- Communicated nuanced results, including negative findings, without oversimplifying.
+- Worked across neuroscience, machine learning, clinical research, and open-science constraints.
 
 ## My role
 
-I led the analysis design and implementation with guidance from my supervisory team at MIT and Harvard. My contributions included:
+I led the analysis design and implementation with guidance from collaborators and advisors at MIT, Harvard, and UBC/BC Children’s Hospital. My contributions included feature construction, multimodal encoding pipeline development, model fitting, cortical summarization, statistical inference, visualization, interpretation, and dissertation/manuscript writing.
 
-- feature construction
-- multimodal encoding pipeline development
-- cortical summarization
-- statistical inference
-- visualization
-- interpretation
-- manuscript and dissertation analysis
+## Publication and thesis
 
-## Publication status
+This project is the central empirical work from my Harvard PhD dissertation and is now available as an eLife reviewed preprint.
 
-This work forms a central part of my dissertation and an *eLife* submission with Yibei Chen, Tamara Vanderwal, and Satra Ghosh. Until a public manuscript or DOI is available, the preregistrations remain the external methodological record.
+- Mentch J, Chen Y, Vanderwal T, Ghosh SS. “Pregistered movie-fMRI analyses reveal altered visual feature encoding in autism in pSTS.” eLife reviewed preprint. DOI: [10.7554/eLife.111008.1](https://doi.org/10.7554/eLife.111008.1).
+- Mentch JS. “Sensory Feature Representation in Autism: Insights From Naturalistic Neuroimaging.” Harvard University dissertation, 2026.
 
-Links to **Preregistration (primary)** and **Preregistration (revision)** appear in the buttons above.
-
-Full methodological detail, robustness checks, and limitations are in the preregistrations and the manuscript.
-
-{% comment %}
-Editor stash: short elevator one-liner overlaps hero/subtitle; keep in sync when editing.
-{% endcomment %}
+<div class="project-link-list">
+  <a href="https://elifesciences.org/reviewed-preprints/111008" target="_blank" rel="noopener noreferrer">eLife reviewed preprint</a>
+  <a href="https://doi.org/10.7554/eLife.111008.1" target="_blank" rel="noopener noreferrer">DOI</a>
+  <a href="https://pubmed.ncbi.nlm.nih.gov/41929098/" target="_blank" rel="noopener noreferrer">PubMed</a>
+  <a href="https://www.biorxiv.org/content/10.64898/2026.03.23.713749v1" target="_blank" rel="noopener noreferrer">bioRxiv</a>
+  <a href="https://www.proquest.com/docview/3308462552?pq-origsite=gscholar&fromopenview=true&sourcetype=Dissertations%20&%20Theses" target="_blank" rel="noopener noreferrer">Dissertation / ProQuest</a>
+  <a href="https://osf.io/h92gr" target="_blank" rel="noopener noreferrer">Preregistration (primary)</a>
+  <a href="https://osf.io/47kj6" target="_blank" rel="noopener noreferrer">Preregistration (revision)</a>
+</div>
