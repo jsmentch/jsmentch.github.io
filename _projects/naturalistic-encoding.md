@@ -78,7 +78,7 @@ The main finding was not a simple global increase in sensory responsiveness. Ins
   <div class="project-disclosure-body">
     <div class="project-figure-scroll">
       <figure class="project-figure project-figure--wide">
-        <img src="{{ '/assets/projects/naturalistic-encoding/fig3.jpg' | relative_url }}" alt="Heatmap summarizing statistical effects across cortical parcels for diagnosis, social responsiveness scores, and sensory scores, with rows for visual and audio model metrics and columns for perceptual brain regions." loading="lazy" width="1024" height="549" decoding="async">
+        <img src="{{ '/assets/projects/naturalistic-encoding/fig3_modelcoeffs.jpg' | relative_url }}" alt="Heatmap summarizing statistical effects across cortical parcels for diagnosis, social responsiveness scores, and sensory scores, with rows for visual and audio model metrics and columns for perceptual brain regions." loading="lazy" width="1024" height="487" decoding="async">
         <figcaption>
           Summary of diagnosis-, social-phenotype-, and sensory-phenotype-related effects across cortical parcels and model metrics. The strongest interpretable pattern was a shift in visual high- versus low-level feature weighting in pSTS and adjacent social/integration regions.
           <span class="project-figure-note">Symbols indicate effects that survived statistical thresholds across motion-quality sensitivity analyses.</span>
@@ -95,7 +95,7 @@ Before interpreting group differences, I checked whether the model behaved as ex
 
 <div class="project-figure-scroll">
   <figure class="project-figure project-figure--wide">
-    <img src="{{ '/assets/projects/naturalistic-encoding/fig2_audiovsvisual.jpg' | relative_url }}" alt="Box plots and cortical surface maps showing visual versus auditory perceptual preference across cortical parcels, with visual preference in visual regions and auditory preference in auditory regions." loading="lazy" width="1024" height="266" decoding="async">
+    <img src="{{ '/assets/projects/naturalistic-encoding/fig2_audiovsvisual.png' | relative_url }}" alt="Box plots and cortical surface maps showing visual versus auditory perceptual preference across cortical parcels, with visual preference in visual regions and auditory preference in auditory regions." loading="lazy" width="1024" height="266" decoding="async">
     <figcaption>
       Model-derived auditory versus visual feature weighting recovered expected sensory organization across cortical regions, providing a validation check before testing autism-related group differences.
       <span class="project-figure-source">Source: eLife reviewed preprint / dissertation</span>
