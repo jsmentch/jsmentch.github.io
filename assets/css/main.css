@@ -1524,6 +1524,15 @@ img {
   background: var(--panel);
 }
 
+.project-figure img.is-zoomable {
+  cursor: zoom-in;
+  transition: opacity 0.15s ease;
+}
+
+.project-figure img.is-zoomable:hover {
+  opacity: 0.9;
+}
+
 .project-figure figcaption {
   margin-top: 0.55rem;
   color: var(--text-muted);
@@ -1541,33 +1550,78 @@ img {
 }
 
 .project-figure--compact {
-  max-width: 18rem;
+  max-width: 26rem;
 }
 
 .project-figure-scroll {
   margin: 1.25rem 0 2rem;
-  max-width: 100%;
-  overflow-x: auto;
-  -webkit-overflow-scrolling: touch;
 }
 
 .project-figure-scroll .project-figure--wide {
-  width: max-content;
-  max-width: none;
+  width: 100%;
+  max-width: 100%;
   margin: 0;
 }
 
 .project-figure-scroll .project-figure--wide img {
-  width: auto;
-  max-width: none;
-  min-width: 0;
+  width: 100%;
+  max-width: 100%;
   height: auto;
 }
 
-.project-figure-scroll .project-figure--wide figcaption {
-  position: sticky;
-  left: 0;
-  max-width: min(46rem, 88vw);
+.lightbox {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  display: none;
+  padding: 3rem 1.25rem;
+  background: rgba(4, 4, 3, 0.93);
+  overflow: auto;
+  -webkit-overflow-scrolling: touch;
+  cursor: zoom-out;
+}
+
+.lightbox.is-open {
+  display: flex;
+}
+
+.lightbox-img {
+  margin: auto;
+  display: block;
+  width: auto;
+  max-width: none;
+  height: auto;
+  border-radius: var(--radius);
+  background: #fff;
+  box-shadow: 0 24px 80px rgba(0, 0, 0, 0.5);
+}
+
+.lightbox-close {
+  position: fixed;
+  top: 1rem;
+  right: 1rem;
+  z-index: 1;
+  display: grid;
+  place-items: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  padding: 0;
+  border: 1px solid var(--line-strong);
+  border-radius: 999px;
+  background: rgba(7, 7, 6, 0.82);
+  color: var(--text);
+  font-size: 1.5rem;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.lightbox-close:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+body.lightbox-active {
+  overflow: hidden;
 }
 
 .project-approach-grid {
@@ -2016,11 +2070,6 @@ img {
 
   .project-approach-grid {
     grid-template-columns: 1fr;
-  }
-
-  .project-figure-scroll .project-figure--wide img {
-    width: auto;
-    max-width: none;
   }
 
   .about-photo--lead {
