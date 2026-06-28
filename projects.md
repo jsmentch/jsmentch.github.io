@@ -57,19 +57,32 @@ wide: true
   </a>
 
   <a class="project-card" id="speech-challenge" href="{{ '/projects/pediatric-speech-dataset/' | relative_url }}">
-    <div class="project-visual project-visual-speech" aria-hidden="true">
-      <span>0.97</span>
-      <small class="project-visual-speech-line">Crowd sourced</small>
-      <small class="project-visual-speech-line">Top AUROC</small>
+    <div class="project-visual project-visual-metrics project-visual-metrics--triple" aria-hidden="true">
+      <div class="project-metric">
+        <span class="project-metric-value">315</span>
+        <small class="project-metric-label">submissions</small>
+      </div>
+      <span class="project-metric-sep" aria-hidden="true"></span>
+      <div class="project-metric">
+        <span class="project-metric-value">0.97</span>
+        <small class="project-metric-label">AUROC</small>
+      </div>
+      <span class="project-metric-sep" aria-hidden="true"></span>
+      <div class="project-metric">
+        <span class="project-metric-value project-metric-value--text">Child</span>
+        <small class="project-metric-label">speech · public ML challenge</small>
+      </div>
     </div>
     <div class="project-body">
-      <p class="project-type">Dataset engineering · Public ML challenge</p>
-      <h2>Pediatric speech dataset</h2>
-      <p>Preprocessing and feature extraction pipelines for anonymized child speech recordings, supporting an ML challenge focused on automated speech recognition for early literacy assessment.</p>
+      <p class="project-type">Dataset engineering · Child speech · Public ML challenge</p>
+      <h2>ReadNet pediatric speech dataset</h2>
+      <p>Led first-year dataset engineering and QA/QC for ReadNet, preparing anonymized pediatric speech and literacy assessment data for a public DrivenData ML challenge that received 315 submissions and reached 0.97 AUROC.</p>
       <ul class="project-tags">
-        <li>Speech</li>
-        <li>Feature extraction</li>
-        <li>Dataset curation</li>
+        <li>Speech data</li>
+        <li>Dataset engineering</li>
+        <li>QA/QC</li>
+        <li>ASR</li>
+        <li>Public ML challenge</li>
       </ul>
     </div>
   </a>
