@@ -972,40 +972,19 @@ img {
 
 .about-photo--lead {
   width: 6.75rem;
-  margin: 0 0 1.35rem;
+  margin: 0 0 1.75rem;
+  padding: 0;
+  border: none;
+  background: none;
+  box-shadow: none;
 }
 
-.about-photo {
-  position: relative;
-  flex-shrink: 0;
-  padding: 0.35rem;
-  border: 1px solid var(--line);
-  border-radius: calc(var(--radius) + 2px);
-  background:
-    linear-gradient(145deg, rgba(110, 231, 183, 0.12), transparent 55%),
-    var(--panel);
-  box-shadow:
-    0 0 0 1px rgba(255, 255, 255, 0.03) inset,
-    0 18px 40px rgba(0, 0, 0, 0.28);
+.about-photo--lead::before {
+  display: none;
 }
 
-.about-photo::before {
-  content: "";
-  position: absolute;
-  inset: -1px;
-  z-index: -1;
-  border-radius: inherit;
-  background: linear-gradient(145deg, rgba(110, 231, 183, 0.35), rgba(125, 211, 252, 0.18), rgba(247, 178, 103, 0.12));
-  opacity: 0.55;
-}
-
-.about-photo img {
-  display: block;
-  width: 100%;
-  height: auto;
+.about-photo--lead img {
   border-radius: var(--radius);
-  object-fit: cover;
-  aspect-ratio: 1;
 }
 
 .projects-intro,
@@ -1551,8 +1530,9 @@ img {
   background: var(--panel);
 }
 
-.project-detail-content .project-figure:not(.project-figure--compact) img {
+.project-figure--compact img {
   width: 100%;
+  max-width: 100%;
 }
 
 .project-figure figcaption {
@@ -1573,10 +1553,6 @@ img {
 
 .project-figure--compact {
   max-width: 18rem;
-}
-
-.project-figure--compact img {
-  width: 100%;
 }
 
 .project-figure-scroll {
