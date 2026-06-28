@@ -117,14 +117,52 @@ body::after {
   }
 }
 
-@keyframes cortex-fit {
+@keyframes weight-pulse-y {
   0%,
   100% {
-    opacity: 0.42;
+    opacity: 0.35;
+    transform: scaleY(0.85);
+  }
+
+  45% {
+    opacity: 0.95;
+    transform: scaleY(1.12);
+  }
+
+  70% {
+    opacity: 0.55;
+    transform: scaleY(1);
+  }
+}
+
+@keyframes weight-pulse-x {
+  0%,
+  100% {
+    opacity: 0.35;
+    transform: scaleX(0.85);
   }
 
   50% {
-    opacity: 1;
+    opacity: 0.9;
+    transform: scaleX(1.15);
+  }
+}
+
+@keyframes activation-pulse {
+  0%,
+  100% {
+    opacity: 0.25;
+    stroke-width: 7;
+  }
+
+  45% {
+    opacity: 0.9;
+    stroke-width: 10;
+  }
+
+  75% {
+    opacity: 0.5;
+    stroke-width: 8;
   }
 }
 
@@ -602,7 +640,15 @@ img {
 .diagram-label--stacked {
   white-space: normal;
   text-align: center;
-  line-height: 1.25;
+  line-height: 1.2;
+  font-size: 0.58rem;
+}
+
+.diagram-label--node {
+  white-space: normal;
+  text-align: center;
+  line-height: 1.15;
+  font-size: 0.58rem;
 }
 
 .feature-band {
@@ -667,46 +713,132 @@ img {
 
 .model-node {
   display: grid;
-  gap: 0.42rem;
-  justify-items: center;
-  padding: 0.8rem 0.55rem;
+  gap: 0.35rem;
+  justify-items: stretch;
+  padding: 0.65rem 0.45rem 0.55rem;
   border: 1px solid rgba(244, 240, 232, 0.13);
   border-radius: var(--radius);
   background: rgba(255, 255, 255, 0.04);
 }
 
-.matrix-row {
-  display: block;
+.weight-matrix {
+  display: grid;
+  gap: 0.38rem;
   width: 100%;
-  height: 0.48rem;
-  border-radius: 999px;
-  background:
-    linear-gradient(90deg, transparent 0 18%, rgba(244, 240, 232, 0.22) 18% 20%, transparent 20% 36%, rgba(110, 231, 183, 0.62) 36% 44%, transparent 44% 60%, rgba(247, 178, 103, 0.52) 60% 66%, transparent 66%);
+  min-height: 2.65rem;
+  padding: 0.1rem 0;
 }
 
-.matrix-row-b {
-  background:
-    linear-gradient(90deg, rgba(125, 211, 252, 0.55) 0 12%, transparent 12% 30%, rgba(244, 240, 232, 0.22) 30% 32%, transparent 32% 55%, rgba(239, 111, 108, 0.56) 55% 64%, transparent 64%);
+.weight-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.22rem;
+  width: 100%;
+  min-height: 0.85rem;
 }
 
-.matrix-row-c {
-  background:
-    linear-gradient(90deg, transparent 0 12%, rgba(247, 178, 103, 0.56) 12% 20%, transparent 20% 45%, rgba(110, 231, 183, 0.5) 45% 54%, transparent 54% 74%, rgba(244, 240, 232, 0.2) 74% 76%, transparent 76%);
+.weight-mark {
+  display: block;
+  flex: 0 0 auto;
+  border-radius: 0;
+  transform-origin: center;
 }
 
-.model-node small {
-  color: var(--text-muted);
-  font-family: var(--font-mono);
-  font-size: 0.62rem;
-  letter-spacing: 0;
-  text-transform: uppercase;
+.weight-mark--horizontal {
+  height: 0.34rem;
+  animation: weight-pulse-x 5.5s ease-in-out infinite;
+}
+
+.weight-mark--vertical {
+  width: 0.34rem;
+  animation: weight-pulse-y 6s ease-in-out infinite;
+}
+
+.weight-row:nth-child(1) .weight-mark--horizontal:nth-child(1) {
+  width: 24%;
+  animation-delay: 0s;
+}
+
+.weight-row:nth-child(1) .weight-mark--horizontal:nth-child(2) {
+  width: 38%;
+  animation-delay: 0.6s;
+}
+
+.weight-row:nth-child(1) .weight-mark--horizontal:nth-child(3) {
+  width: 28%;
+  animation-delay: 1.2s;
+}
+
+.weight-row:nth-child(2) .weight-mark--vertical:nth-child(1) {
+  height: 0.95rem;
+  animation-delay: 0.3s;
+}
+
+.weight-row:nth-child(2) .weight-mark--horizontal:nth-child(2) {
+  width: 32%;
+  animation-delay: 0.9s;
+}
+
+.weight-row:nth-child(2) .weight-mark--vertical:nth-child(3) {
+  height: 0.72rem;
+  animation-delay: 1.5s;
+}
+
+.weight-row:nth-child(2) .weight-mark--horizontal:nth-child(4) {
+  width: 26%;
+  animation-delay: 2.1s;
+}
+
+.weight-row:nth-child(3) .weight-mark--horizontal:nth-child(1) {
+  width: 30%;
+  animation-delay: 0.45s;
+}
+
+.weight-row:nth-child(3) .weight-mark--vertical:nth-child(2) {
+  height: 0.88rem;
+  animation-delay: 1.05s;
+}
+
+.weight-row:nth-child(3) .weight-mark--horizontal:nth-child(3) {
+  width: 22%;
+  animation-delay: 1.65s;
+}
+
+.weight-row:nth-child(3) .weight-mark--vertical:nth-child(4) {
+  height: 0.68rem;
+  animation-delay: 2.25s;
+}
+
+.weight-mark--teal {
+  background: rgba(110, 231, 183, 0.72);
+}
+
+.weight-mark--blue {
+  background: rgba(125, 211, 252, 0.68);
+}
+
+.weight-mark--orange {
+  background: rgba(247, 178, 103, 0.7);
+}
+
+.weight-mark--red {
+  background: rgba(239, 111, 108, 0.68);
+}
+
+.weight-mark--green {
+  background: rgba(110, 231, 183, 0.58);
+}
+
+.weight-mark--gray {
+  background: rgba(244, 240, 232, 0.28);
 }
 
 .cortex-output {
   display: grid;
   gap: 0.35rem;
   justify-items: center;
-  padding: 0.5rem 0.8rem 0.35rem 0;
+  padding: 0.45rem 0.25rem 0.35rem 0.1rem;
 }
 
 .cortex-map {
@@ -730,24 +862,29 @@ img {
 
 .cortex-activation {
   fill: none;
-  stroke-linecap: round;
-  stroke-width: 9;
+  stroke-linecap: butt;
+  stroke-width: 8;
   opacity: 0.55;
-  animation: cortex-fit 3.8s ease-in-out infinite;
+  animation: activation-pulse 6.5s ease-in-out infinite;
 }
 
 .cortex-activation-a {
-  stroke: rgba(110, 231, 183, 0.8);
+  stroke: rgba(110, 231, 183, 0.85);
 }
 
 .cortex-activation-b {
-  stroke: rgba(247, 178, 103, 0.74);
-  animation-delay: 0.65s;
+  stroke: rgba(247, 178, 103, 0.8);
+  animation-delay: 1s;
 }
 
 .cortex-activation-c {
-  stroke: rgba(125, 211, 252, 0.68);
-  animation-delay: 1.2s;
+  stroke: rgba(125, 211, 252, 0.75);
+  animation-delay: 2s;
+}
+
+.cortex-activation-d {
+  stroke: rgba(239, 111, 108, 0.72);
+  animation-delay: 3s;
 }
 
 .instrument-readout {
@@ -1878,6 +2015,17 @@ body.lightbox-active {
   .ticker-track {
     transform: none;
   }
+
+  .weight-mark,
+  .cortex-activation {
+    opacity: 0.75;
+    transform: none;
+  }
+
+  .feature-band {
+    opacity: 1;
+    transform: scaleX(1);
+  }
 }
 
 @media (max-width: 920px) {
@@ -1997,7 +2145,7 @@ body.lightbox-active {
   }
 
   .diagram-label,
-  .model-node small {
+  .diagram-label--node {
     display: none;
   }
 

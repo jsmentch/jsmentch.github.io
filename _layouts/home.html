@@ -31,7 +31,7 @@ layout: default
           <div class="instrument-topline">
             <span>encoding model</span>
           </div>
-          <div class="encoding-diagram">
+          <div class="encoding-diagram" role="img" aria-label="Animated schematic of an encoding model converting stimulus features into fitted weights and predicted cortical activation.">
             <div class="feature-stack">
               <span class="diagram-label">stimulus features</span>
               <span class="feature-band feature-band-a"></span>
@@ -41,15 +41,31 @@ layout: default
             </div>
             <span class="pipeline-link pipeline-link-a"></span>
             <div class="model-node">
-              <span class="diagram-label">fit weights</span>
-              <span class="matrix-row matrix-row-a"></span>
-              <span class="matrix-row matrix-row-b"></span>
-              <span class="matrix-row matrix-row-c"></span>
-              <small>ridge model</small>
+              <span class="diagram-label diagram-label--node">stacked regression</span>
+              <div class="weight-matrix" aria-hidden="true">
+                <div class="weight-row">
+                  <span class="weight-mark weight-mark--horizontal weight-mark--gray"></span>
+                  <span class="weight-mark weight-mark--horizontal weight-mark--teal"></span>
+                  <span class="weight-mark weight-mark--horizontal weight-mark--orange"></span>
+                </div>
+                <div class="weight-row">
+                  <span class="weight-mark weight-mark--vertical weight-mark--blue"></span>
+                  <span class="weight-mark weight-mark--horizontal weight-mark--red"></span>
+                  <span class="weight-mark weight-mark--vertical weight-mark--teal"></span>
+                  <span class="weight-mark weight-mark--horizontal weight-mark--blue"></span>
+                </div>
+                <div class="weight-row">
+                  <span class="weight-mark weight-mark--horizontal weight-mark--orange"></span>
+                  <span class="weight-mark weight-mark--vertical weight-mark--green"></span>
+                  <span class="weight-mark weight-mark--horizontal weight-mark--gray"></span>
+                  <span class="weight-mark weight-mark--vertical weight-mark--red"></span>
+                </div>
+              </div>
+              <span class="diagram-label diagram-label--node">encoding model</span>
             </div>
             <span class="pipeline-link pipeline-link-b"></span>
             <div class="cortex-output">
-              <span class="diagram-label diagram-label--stacked">predicted cortical<br>activation</span>
+              <span class="diagram-label diagram-label--stacked">predicted<br>cortical activation</span>
               <svg class="cortex-map" viewBox="0 0 180 128" role="presentation" focusable="false">
                 <path class="cortex-outline" d="M29 79 C19 57 30 33 55 24 C76 16 103 18 124 28 C151 41 161 68 151 91 C141 115 109 122 80 115 C56 109 38 99 29 79 Z"></path>
                 <path class="cortex-fold" d="M50 66 C68 53 89 54 110 62 C126 68 137 79 143 91"></path>
@@ -58,6 +74,7 @@ layout: default
                 <path class="cortex-activation cortex-activation-a" d="M63 53 C78 43 100 45 117 56"></path>
                 <path class="cortex-activation cortex-activation-b" d="M54 84 C76 74 99 78 124 94"></path>
                 <path class="cortex-activation cortex-activation-c" d="M91 31 C112 33 132 46 141 65"></path>
+                <path class="cortex-activation cortex-activation-d" d="M38 72 C52 58 68 52 88 58"></path>
               </svg>
             </div>
           </div>
