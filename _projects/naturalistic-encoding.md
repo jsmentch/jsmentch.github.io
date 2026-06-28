@@ -149,7 +149,11 @@ For me, this project was also a testbed for applied machine learning on messy, h
 
 ## My role
 
-I led the analysis design and implementation with guidance from collaborators and advisors at MIT, Harvard, and UBC/BC Children’s Hospital. My contributions included feature construction, multimodal encoding pipeline development, model fitting, cortical summarization, statistical inference, visualization, interpretation, and dissertation/manuscript writing.
+I drove this project from idea to manuscript. I framed the research questions, reviewed the literature, developed the preregistered analysis plan, implemented the modeling pipeline, ran the statistical analyses, interpreted the results, and wrote the dissertation/manuscript.
+
+My technical contributions included multimodal feature construction, stacked encoding model development, large-scale model fitting, cortical summarization, motion-threshold robustness analyses, FDR-controlled inference, visualization, and result interpretation.
+
+I worked with collaborators and advisors at MIT, Harvard, and UBC/BC Children’s Hospital, whose guidance and feedback strengthened the scientific framing, interpretation, and final paper.
 
 ## Publication and thesis
 

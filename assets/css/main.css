@@ -970,22 +970,14 @@ img {
   border-color: var(--accent);
 }
 
-.about-intro {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
-  gap: 2rem 2.25rem;
-  align-items: start;
-}
-
-.about-copy {
-  min-width: 0;
+.about-photo--lead {
+  width: 6.75rem;
+  margin: 0 0 1.35rem;
 }
 
 .about-photo {
   position: relative;
   flex-shrink: 0;
-  width: 8.5rem;
-  margin: 0.15rem 0 0;
   padding: 0.35rem;
   border: 1px solid var(--line);
   border-radius: calc(var(--radius) + 2px);
@@ -1528,6 +1520,14 @@ img {
   max-width: var(--content-width);
 }
 
+.project-detail-content .project-figure:not(.project-figure--compact),
+.project-detail-content .project-figure-scroll,
+.project-detail-content .project-disclosure {
+  width: min(var(--max-width), calc(100vw - 2 * var(--space)));
+  max-width: none;
+  margin-left: calc(-0.5 * max(0px, min(var(--max-width), calc(100vw - 2 * var(--space))) - var(--content-width)));
+}
+
 .project-detail-content h2 {
   margin-top: 2.25rem;
 }
@@ -1551,10 +1551,8 @@ img {
   background: var(--panel);
 }
 
-.project-detail-content .project-figure:not(.project-figure--compact),
-.project-detail-content .project-figure-scroll {
-  width: min(56rem, 100%);
-  max-width: none;
+.project-detail-content .project-figure:not(.project-figure--compact) img {
+  width: 100%;
 }
 
 .project-figure figcaption {
@@ -2054,14 +2052,8 @@ img {
     max-width: none;
   }
 
-  .about-intro {
-    grid-template-columns: 1fr;
-    gap: 1.5rem;
-  }
-
-  .about-photo {
-    width: 7rem;
-    order: -1;
+  .about-photo--lead {
+    width: 6rem;
   }
 
   .project-metric-value,

@@ -2,10 +2,10 @@
 layout: page
 title: About
 permalink: /about
+portrait: /assets/about/headshot.jpg
 ---
 
-<div class="about-intro motion-reveal">
-  <div class="about-copy" markdown="1">
+<div class="motion-reveal" markdown="1">
 
 I am an applied machine learning researcher and data scientist focused on complex human-centered signals: speech, audio, movies, gaze, behavior, and brain data. I like problems where the data are rich, messy, high-dimensional, and not easily reduced to a tidy benchmark.
 
@@ -19,15 +19,4 @@ My broader research path has included <a href="https://www.abingtonneurology.com
 
 Outside of work, I write and produce <a href="https://mylinks.ai/jeffxr">music</a>, play tennis, and have taken an unusually high number of photos of a Tibetan spaniel named <a href="https://www.instagram.com/francois_xr/">François</a><a href="https://whisperwindows.com/">.</a>
 
-  </div>
-
-  <figure class="about-photo" aria-label="Portrait of Jeff Mentch">
-    <img
-      src="{{ '/assets/about/headshot.jpg' | relative_url }}"
-      alt="Portrait of Jeff Mentch"
-      width="320"
-      height="320"
-      loading="lazy"
-      decoding="async">
-  </figure>
 </div>

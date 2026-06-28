@@ -5,6 +5,17 @@ layout: default
 <main class="main" id="main">
   <div class="wrap">
     <article class="page-content{% if page.wide %} page-content-wide{% endif %}">
+      {% if page.portrait %}
+      <figure class="about-photo about-photo--lead" aria-label="Portrait of Jeff Mentch">
+        <img
+          src="{{ page.portrait | relative_url }}"
+          alt="Portrait of Jeff Mentch"
+          width="320"
+          height="320"
+          loading="lazy"
+          decoding="async">
+      </figure>
+      {% endif %}
       <h1>{{ page.title }}</h1>
       {{ content }}
     </article>
