@@ -763,6 +763,13 @@ img {
   text-transform: uppercase;
 }
 
+.instrument-readout-filler {
+  opacity: 0.35;
+  background:
+    repeating-linear-gradient(135deg, rgba(255, 255, 255, 0.04) 0 4px, transparent 4px 8px),
+    rgba(255, 255, 255, 0.02);
+}
+
 @media (prefers-reduced-motion: no-preference) {
   .motion-hero > * {
     animation: fade-up 0.7s cubic-bezier(0.22, 1, 0.36, 1) both;
@@ -1536,11 +1543,18 @@ img {
 
 .project-figure img {
   display: block;
-  width: 100%;
+  width: auto;
+  max-width: 100%;
   height: auto;
   border: 1px solid var(--line);
   border-radius: var(--radius);
   background: var(--panel);
+}
+
+.project-detail-content .project-figure:not(.project-figure--compact),
+.project-detail-content .project-figure-scroll {
+  width: min(56rem, 100%);
+  max-width: none;
 }
 
 .project-figure figcaption {
@@ -1560,7 +1574,11 @@ img {
 }
 
 .project-figure--compact {
-  max-width: 16rem;
+  max-width: 18rem;
+}
+
+.project-figure--compact img {
+  width: 100%;
 }
 
 .project-figure-scroll {
@@ -1571,12 +1589,16 @@ img {
 }
 
 .project-figure-scroll .project-figure--wide {
-  min-width: min(52rem, 100%);
+  width: max-content;
+  max-width: none;
   margin: 0;
 }
 
 .project-figure-scroll .project-figure--wide img {
-  min-width: 42rem;
+  width: auto;
+  max-width: none;
+  min-width: 0;
+  height: auto;
 }
 
 .project-approach-grid {
@@ -1637,21 +1659,29 @@ img {
 .project-link-list {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.65rem;
+  align-items: center;
+  gap: 0.5rem 0.75rem;
   margin-top: 1.25rem;
 }
 
+.project-link-sep {
+  color: var(--text-faint);
+  font-size: 0.85rem;
+  user-select: none;
+}
+
 .project-link-list a {
-  border: 1px solid var(--line);
-  border-radius: 999px;
-  padding: 0.35rem 0.65rem;
+  border: none;
+  border-radius: 0;
+  padding: 0;
   color: var(--text-muted);
-  font-size: 0.8rem;
+  font-size: 0.88rem;
+  border-bottom: 1px solid rgba(110, 231, 183, 0.35);
 }
 
 .project-link-list a:hover {
-  border-color: rgba(110, 231, 183, 0.55);
-  color: var(--text);
+  color: var(--accent);
+  border-color: var(--accent);
 }
 
 .site-footer {
@@ -2020,7 +2050,8 @@ img {
   }
 
   .project-figure-scroll .project-figure--wide img {
-    min-width: 36rem;
+    width: auto;
+    max-width: none;
   }
 
   .about-intro {

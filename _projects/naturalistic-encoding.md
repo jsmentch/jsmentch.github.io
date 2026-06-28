@@ -56,7 +56,7 @@ This became a large-scale supervised learning and inference problem: transform c
 The core technical task was to turn a naturalistic movie into structured feature timelines, predict brain responses from each feature space, and compare how different kinds of information were weighted across cortex.
 
 <figure class="project-figure">
-  <img src="{{ '/assets/projects/naturalistic-encoding/methods_modelAV.jpg' | relative_url }}" alt="Schematic of a stacked encoding model where movie stimuli are transformed into audio and visual features, separate encoding models predict brain activity, and a stacked model combines them to estimate feature weights." loading="lazy" width="1024" height="567">
+  <img src="{{ '/assets/projects/naturalistic-encoding/methods_modelAV.png' | relative_url }}" alt="Schematic of a stacked encoding model where movie stimuli are transformed into audio and visual features, separate encoding models predict brain activity, and a stacked model combines them to estimate feature weights." loading="lazy" width="1024" height="567">
   <figcaption>
     Stacked encoding model pipeline. Continuous movie stimuli were converted into synchronized audio and visual feature spaces. Feature-specific encoding models predicted fMRI responses, and a stacked model estimated how strongly each feature space contributed to brain activity.
     <span class="project-figure-source">Source: eLife reviewed preprint / dissertation</span>
@@ -78,7 +78,7 @@ The main finding was not a simple global increase in sensory responsiveness. Ins
   <div class="project-disclosure-body">
     <div class="project-figure-scroll">
       <figure class="project-figure project-figure--wide">
-        <img src="{{ '/assets/projects/naturalistic-encoding/fig3.jpg' | relative_url }}" alt="Heatmap summarizing statistical effects across cortical parcels for diagnosis, social responsiveness scores, and sensory scores, with rows for visual and audio model metrics and columns for perceptual brain regions." loading="lazy" width="1024" height="549">
+        <img src="{{ '/assets/projects/naturalistic-encoding/fig3.png' | relative_url }}" alt="Heatmap summarizing statistical effects across cortical parcels for diagnosis, social responsiveness scores, and sensory scores, with rows for visual and audio model metrics and columns for perceptual brain regions." loading="lazy" width="1024" height="549">
         <figcaption>
           Summary of diagnosis-, social-phenotype-, and sensory-phenotype-related effects across cortical parcels and model metrics. The strongest interpretable pattern was a shift in visual high- versus low-level feature weighting in pSTS and adjacent social/integration regions.
           <span class="project-figure-note">Symbols indicate effects that survived statistical thresholds across motion-quality sensitivity analyses.</span>
@@ -95,7 +95,7 @@ Before interpreting group differences, I checked whether the model behaved as ex
 
 <div class="project-figure-scroll">
   <figure class="project-figure project-figure--wide">
-    <img src="{{ '/assets/projects/naturalistic-encoding/fig2_audiovsvisual.jpg' | relative_url }}" alt="Box plots and cortical surface maps showing visual versus auditory perceptual preference across cortical parcels, with visual preference in visual regions and auditory preference in auditory regions." loading="lazy" width="1024" height="266">
+    <img src="{{ '/assets/projects/naturalistic-encoding/fig2_audiovsvisual.png' | relative_url }}" alt="Box plots and cortical surface maps showing visual versus auditory perceptual preference across cortical parcels, with visual preference in visual regions and auditory preference in auditory regions." loading="lazy" width="1024" height="266">
     <figcaption>
       Model-derived auditory versus visual feature weighting recovered expected sensory organization across cortical regions, providing a validation check before testing autism-related group differences.
       <span class="project-figure-source">Source: eLife reviewed preprint / dissertation</span>
@@ -129,7 +129,7 @@ Before interpreting group differences, I checked whether the model behaved as ex
 This study translated long-standing theories of autistic perception into testable model comparisons: low- versus high-level feature encoding and auditory versus visual feature weighting during movie viewing.
 
 <figure class="project-figure project-figure--compact">
-  <img src="{{ '/assets/projects/naturalistic-encoding/fig1_wcc_epf.jpg' | relative_url }}" alt="Conceptual diagram contrasting weak central coherence, enhanced perceptual functioning, visual dominance, and possible auditory dominance theories of perception in autism." loading="lazy" width="592" height="1024">
+  <img src="{{ '/assets/projects/naturalistic-encoding/fig1_wcc_epf.png' | relative_url }}" alt="Conceptual diagram contrasting weak central coherence, enhanced perceptual functioning, visual dominance, and possible auditory dominance theories of perception in autism." loading="lazy" width="592" height="1024">
   <figcaption>
     The project contrasted theories of autistic perception: whether differences reflect enhanced low-level sensory encoding, reduced integration of higher-level information, or altered balance between auditory and visual information during naturalistic perception.
     <span class="project-figure-source">Source: eLife reviewed preprint / dissertation</span>
@@ -158,12 +158,18 @@ This project is the central empirical work from my Harvard PhD dissertation and 
 - Mentch J, Chen Y, Vanderwal T, Ghosh SS. “Pregistered movie-fMRI analyses reveal altered visual feature encoding in autism in pSTS.” eLife reviewed preprint. DOI: [10.7554/eLife.111008.1](https://doi.org/10.7554/eLife.111008.1).
 - Mentch JS. “Sensory Feature Representation in Autism: Insights From Naturalistic Neuroimaging.” Harvard University dissertation, 2026.
 
-<div class="project-link-list">
+<nav class="project-link-list" aria-label="Publication links">
   <a href="https://elifesciences.org/reviewed-preprints/111008" target="_blank" rel="noopener noreferrer">eLife reviewed preprint</a>
+  <span class="project-link-sep" aria-hidden="true">|</span>
   <a href="https://doi.org/10.7554/eLife.111008.1" target="_blank" rel="noopener noreferrer">DOI</a>
+  <span class="project-link-sep" aria-hidden="true">|</span>
   <a href="https://pubmed.ncbi.nlm.nih.gov/41929098/" target="_blank" rel="noopener noreferrer">PubMed</a>
+  <span class="project-link-sep" aria-hidden="true">|</span>
   <a href="https://www.biorxiv.org/content/10.64898/2026.03.23.713749v1" target="_blank" rel="noopener noreferrer">bioRxiv</a>
+  <span class="project-link-sep" aria-hidden="true">|</span>
   <a href="https://www.proquest.com/docview/3308462552?pq-origsite=gscholar&fromopenview=true&sourcetype=Dissertations%20&%20Theses" target="_blank" rel="noopener noreferrer">Dissertation / ProQuest</a>
+  <span class="project-link-sep" aria-hidden="true">|</span>
   <a href="https://osf.io/h92gr" target="_blank" rel="noopener noreferrer">Preregistration (primary)</a>
+  <span class="project-link-sep" aria-hidden="true">|</span>
   <a href="https://osf.io/47kj6" target="_blank" rel="noopener noreferrer">Preregistration (revision)</a>
-</div>
+</nav>
