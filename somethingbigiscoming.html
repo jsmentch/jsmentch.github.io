@@ -8,11 +8,11 @@ permalink: /somethingbigiscoming/
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Something Big Is Coming | Jeff Mentch</title>
-    <meta name="description" content="A classified countdown for something heavy.">
+    <meta name="description" content="A classified countdown tracking something heavy.">
     <meta name="robots" content="noindex,nofollow,noarchive">
     <link rel="canonical" href="https://jeffmentch.com/somethingbigiscoming/">
     <meta property="og:title" content="Something Big Is Coming">
-    <meta property="og:description" content="A classified countdown for something heavy.">
+    <meta property="og:description" content="A classified countdown tracking something heavy.">
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://jeffmentch.com/somethingbigiscoming/">
     <meta name="theme-color" content="#0b0b0d">
@@ -643,10 +643,10 @@ permalink: /somethingbigiscoming/
       </div>
 
       <section class="arrival-content">
-        <p class="eyebrow">Night freight protocol armed</p>
+        <p class="eyebrow">UPS freight protocol armed</p>
         <h1 id="arrival-title">Something Big Is Coming</h1>
         <p class="mood">Like a thief in the night. Things are about to get heavy.</p>
-        <p class="tagline">The object is moving. The identity remains sealed.</p>
+        <p class="tagline">The object is on the way. The identity remains sealed.</p>
 
         <div class="countdown" aria-label="Countdown to projected arrival">
           <div class="time-unit">
@@ -671,17 +671,17 @@ permalink: /somethingbigiscoming/
           <div class="intel-item">
             <span class="intel-label">Last Known Location</span>
             <span class="intel-value" data-shipment-location>Columbus, OH</span>
-            <span class="intel-note">Origin corridor. No spoilers beyond the signal.</span>
+            <span class="intel-note" data-shipment-location-note>Latest UPS scan: Jul 24, 2026, 2:45 AM EDT.</span>
           </div>
           <div class="intel-item">
             <span class="intel-label">Status</span>
-            <span class="intel-value" data-shipment-status>In transit</span>
+            <span class="intel-value" data-shipment-status>On the Way</span>
             <span class="intel-note" data-shipment-updated>Last ping: Jul 22, 2026</span>
           </div>
           <div class="intel-item">
             <span class="intel-label">Arrival Window</span>
-            <span class="intel-value" data-shipment-eta>Projected: Jul 30, 2026</span>
-            <span class="intel-note">Carrier ETA is quiet, so the fallback clock is live.</span>
+            <span class="intel-value" data-shipment-eta>Tomorrow, Jul 25, 2026</span>
+            <span class="intel-note" data-shipment-window>UPS window: 2:00 PM - 6:00 PM EDT.</span>
           </div>
         </div>
 
@@ -693,10 +693,13 @@ permalink: /somethingbigiscoming/
     <script>
       (function () {
         var shipment = {
-          targetIso: "2026-07-30T20:00:00-04:00",
+          targetIso: "2026-07-25T18:00:00-04:00",
           lastKnownLocation: "Columbus, OH",
-          status: "In transit",
-          lastUpdatedIso: "2026-07-22T11:31:33.000Z",
+          locationNote: "Latest UPS scan: Jul 24, 2026, 2:45 AM EDT.",
+          status: "On the Way",
+          lastUpdatedIso: "2026-07-24T02:45:00-04:00",
+          etaLabel: "Tomorrow, Jul 25, 2026",
+          etaWindow: "UPS window: 2:00 PM - 6:00 PM EDT.",
           revealToken: "aHR0cHM6Ly93d3cucm9ndWVmaXRuZXNzLmNvbS9yb2d1ZS1lY2hvLWJpa2U="
         };
 
@@ -726,11 +729,14 @@ permalink: /somethingbigiscoming/
           var targetDate = new Date(shipment.targetIso);
           var lastUpdated = new Date(shipment.lastUpdatedIso);
           var location = document.querySelector("[data-shipment-location]");
+          var locationNote = document.querySelector("[data-shipment-location-note]");
           var status = document.querySelector("[data-shipment-status]");
           var updated = document.querySelector("[data-shipment-updated]");
           var eta = document.querySelector("[data-shipment-eta]");
+          var etaWindow = document.querySelector("[data-shipment-window]");
 
           location.textContent = shipment.lastKnownLocation;
+          locationNote.textContent = shipment.locationNote;
           status.textContent = shipment.status;
           updated.textContent = "Last ping: " + formatDate(lastUpdated, {
             month: "short",
@@ -738,14 +744,17 @@ permalink: /somethingbigiscoming/
             year: "numeric",
             hour: "numeric",
             minute: "2-digit",
+            timeZone: "America/New_York",
             timeZoneName: "short"
           });
-          eta.textContent = "Projected: " + formatDate(targetDate, {
+          eta.textContent = shipment.etaLabel || ("Projected: " + formatDate(targetDate, {
             weekday: "short",
             month: "short",
             day: "numeric",
-            year: "numeric"
-          });
+            year: "numeric",
+            timeZone: "America/New_York"
+          }));
+          etaWindow.textContent = shipment.etaWindow;
         }
 
         function setStyleVars(element, vars) {
