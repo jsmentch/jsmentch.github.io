@@ -35,7 +35,7 @@ Digital camera sensors are naturally sensitive to some **near-infrared** light, 
 
 This is **not thermal** or “heat vision.” Thermal imaging lives in the far-infrared range, which standard consumer camera sensors generally do not capture.
 
-<p class="project-caption"><img src="{{ '/assets/ir/screenshot.png' | relative_url }}" alt="Reference examples of infrared landscape photography"></p>
+<p class="project-caption"><img loading="lazy" decoding="async" src="{{ '/assets/ir/screenshot.jpg' | relative_url }}" alt="Reference examples of infrared landscape photography"></p>
 
 <p class="project-caption"><strong>Reference frame:</strong> examples of infrared landscape photography.</p>
 
@@ -43,11 +43,11 @@ Green plants and grass can take on a **bright pink or purple** appearance depend
 
 <div class="figure-grid">
 <figure>
-<img src="{{ '/assets/ir/2.jpg' | relative_url }}" alt="Grass in near-infrared with purple-shifted foliage">
+<img loading="lazy" decoding="async" src="{{ '/assets/ir/2.jpg' | relative_url }}" alt="Grass in near-infrared with purple-shifted foliage">
 <figcaption>Grass in near-infrared with purple-shifted foliage.</figcaption>
 </figure>
 <figure>
-<img src="{{ '/assets/ir/3.jpg' | relative_url }}" alt="Plants photographed in infrared">
+<img loading="lazy" decoding="async" src="{{ '/assets/ir/3.jpg' | relative_url }}" alt="Plants photographed in infrared">
 <figcaption>Plants photographed in infrared.</figcaption>
 </figure>
 </div>
@@ -56,7 +56,7 @@ Green plants and grass can take on a **bright pink or purple** appearance depend
 
 My first conversion target was an old **LG G3** smartphone from 2014. It was expendable enough that I would not be upset if I destroyed it, but still had a decent camera module. It also had an **IR autofocus system**, which later turned into an unexpected bonus.
 
-<p class="project-caption"><img src="{{ '/assets/ir/phone.jpg' | relative_url }}" alt="LG G3 smartphone prepared for infrared sensor modification"></p>
+<p class="project-caption"><img loading="lazy" decoding="async" src="{{ '/assets/ir/phone.jpg' | relative_url }}" alt="LG G3 smartphone prepared for infrared sensor modification"></p>
 
 The plan was simple: disassemble the phone, remove the IR-cut filter in front of the sensor, put it back together, and see what happened.
 
@@ -66,11 +66,11 @@ In practice, it was messy. I was working with limited tools during lockdown, inc
 
 Once the filter was removed, the camera **no longer focused normally** and effectively became a **macro-first** system. That was fun for close-up shots, but I really wanted to shoot **spring landscapes** and foliage.
 
-<p class="project-caption"><img src="{{ '/assets/ir/4.jpg' | relative_url }}" alt="Macro infrared photograph"></p>
+<p class="project-caption"><img loading="lazy" decoding="async" src="{{ '/assets/ir/4.jpg' | relative_url }}" alt="Macro infrared photograph"></p>
 
 <p class="project-caption">Macro infrared example.</p>
 
-<p class="project-caption"><img src="{{ '/assets/ir/5.jpg' | relative_url }}" alt="Macro infrared with diffraction grating rainbow effects"></p>
+<p class="project-caption"><img loading="lazy" decoding="async" src="{{ '/assets/ir/5.jpg' | relative_url }}" alt="Macro infrared with diffraction grating rainbow effects"></p>
 
 <p class="project-caption">Macro infrared shot with a diffraction grating for rainbow effects.</p>
 
@@ -82,11 +82,11 @@ I also experimented with **stacking colored filters** from an old flashlight bet
 
 <div class="figure-grid">
 <figure>
-<img src="{{ '/assets/ir/telephoto.jpg' | relative_url }}" alt="Telephoto lens mounted onto the LG G3">
+<img loading="lazy" decoding="async" src="{{ '/assets/ir/telephoto.jpg' | relative_url }}" alt="Telephoto lens mounted onto the LG G3">
 <figcaption>Telephoto lens mounted onto the G3.</figcaption>
 </figure>
 <figure>
-<img src="{{ '/assets/ir/setup-pic.jpg' | relative_url }}" alt="Field setup with improvised phone and lens mount">
+<img loading="lazy" decoding="async" src="{{ '/assets/ir/setup-pic.jpg' | relative_url }}" alt="Field setup with improvised phone and lens mount">
 <figcaption>The field setup—improvised, awkward, but functional.</figcaption>
 </figure>
 </div>
@@ -104,7 +104,7 @@ My typical workflow was:
 
 Because the files needed heavy manipulation, **shooting RAW/DNG** helped whenever possible. I was able to use **Lightroom and Photoshop** during this period and leaned on that workflow heavily.
 
-<p class="project-caption"><img src="{{ '/assets/ir/sidebyside.png' | relative_url }}" alt="Raw image vs edited infrared result"></p>
+<p class="project-caption"><img loading="lazy" decoding="async" src="{{ '/assets/ir/sidebyside.jpg' | relative_url }}" alt="Raw image vs edited infrared result"></p>
 
 <p class="project-caption"><strong>Raw image (left)</strong> vs <strong>edited infrared result (right).</strong></p>
 
@@ -112,7 +112,7 @@ Because the files needed heavy manipulation, **shooting RAW/DNG** helped wheneve
 
 A funny side effect of the LG conversion was that the phone’s **IR autofocus emitter** became visible to the modified sensor. In a completely dark room, the phone could effectively **illuminate the scene** with its own IR pulses, creating a crude **night-vision** view on screen.
 
-<p class="project-caption"><img src="{{ '/assets/ir/nightvision.jpg' | relative_url }}" alt="Soap in a bathroom in darkness using IR autofocus illumination"></p>
+<p class="project-caption"><img loading="lazy" decoding="async" src="{{ '/assets/ir/nightvision.jpg' | relative_url }}" alt="Soap in a bathroom in darkness using IR autofocus illumination"></p>
 
 <p class="project-caption"><strong>Soap</strong> in a bathroom photographed in complete darkness using the phone’s IR autofocus illumination.</p>
 
@@ -120,7 +120,7 @@ A funny side effect of the LG conversion was that the phone’s **IR autofocus e
 
 After proving the idea on the LG G3, I wanted something more practical for outdoor shooting. I later converted a **Sony Cyber-shot DSC-H20**, which was a better fit for general-purpose infrared photography: compact, landscape-capable, and easier to handle than the hacked phone setup.
 
-<p class="project-caption"><img src="{{ '/assets/ir2/cybershot.jpg' | relative_url }}" alt="Sony Cyber-shot DSC-H20 opened during conversion"></p>
+<p class="project-caption"><img loading="lazy" decoding="async" src="{{ '/assets/ir2/cybershot.jpg' | relative_url }}" alt="Sony Cyber-shot DSC-H20 opened during conversion"></p>
 
 This conversion was also **much cleaner**. Unlike the phone, the Sony was relatively straightforward to open, and **the filter was not glued** in place. The whole process mostly required patience and a tiny screwdriver.
 
@@ -130,31 +130,31 @@ This conversion was also **much cleaner**. Unlike the phone, the Sony was relati
 
 There were **8 external screws** holding the camera body together, including **two hidden below the flash**. Missing those makes the disassembly feel like something is stuck when it really is not.
 
-<p class="project-caption"><img src="{{ '/assets/ir2/screws.jpg' | relative_url }}" alt="Outer screws removed from DSC-H20"></p>
+<p class="project-caption"><img loading="lazy" decoding="async" src="{{ '/assets/ir2/screws.jpg' | relative_url }}" alt="Outer screws removed from DSC-H20"></p>
 
 **Step 2: Pry open the case**
 
 Once all screws were removed, I carefully separated the shell from **the bottom seam**.
 
-<p class="project-caption"><img src="{{ '/assets/ir2/pry.jpg' | relative_url }}" alt="Prying open the DSC-H20 case"></p>
+<p class="project-caption"><img loading="lazy" decoding="async" src="{{ '/assets/ir2/pry.jpg' | relative_url }}" alt="Prying open the DSC-H20 case"></p>
 
 **Step 3: Avoid the capacitors**
 
 With the case open, the internals are exposed, including capacitors **I definitely did not want to touch**.
 
-<p class="project-caption"><img src="{{ '/assets/ir2/caseoff.jpg' | relative_url }}" alt="DSC-H20 case open exposing internals"></p>
+<p class="project-caption"><img loading="lazy" decoding="async" src="{{ '/assets/ir2/caseoff.jpg' | relative_url }}" alt="DSC-H20 case open exposing internals"></p>
 
 **Step 4: Access the lens/sensor assembly**
 
 It was possible to sneak the **lens assembly** out far enough to reach the sensor/filter area without fully tearing down the camera.
 
-<p class="project-caption"><img src="{{ '/assets/ir2/screws2.jpg' | relative_url }}" alt="Accessing lens and sensor assembly screws"></p>
+<p class="project-caption"><img loading="lazy" decoding="async" src="{{ '/assets/ir2/screws2.jpg' | relative_url }}" alt="Accessing lens and sensor assembly screws"></p>
 
 **Step 5: Remove the IR filter**
 
 After removing **two more screws**, the IR-cut filter was easy to access. It was **not glued** and came out much more cleanly than the phone mod.
 
-<p class="project-caption"><img src="{{ '/assets/ir2/filter.jpg' | relative_url }}" alt="IR-cut filter removed from Sony DSC-H20"></p>
+<p class="project-caption"><img loading="lazy" decoding="async" src="{{ '/assets/ir2/filter.jpg' | relative_url }}" alt="IR-cut filter removed from Sony DSC-H20"></p>
 
 At that point the camera could be left **full spectrum** or fitted with another filter if I wanted to bias the system toward a different part of the spectrum later.
 
@@ -164,23 +164,23 @@ I kept the build photos because they may be useful to anyone trying something si
 
 <div class="figure-grid">
 <figure>
-<img src="{{ '/assets/ir2/screws.jpg' | relative_url }}" alt="Screw map / outer screws">
+<img loading="lazy" decoding="async" src="{{ '/assets/ir2/screws.jpg' | relative_url }}" alt="Screw map / outer screws">
 <figcaption>Screw map / outer screws.</figcaption>
 </figure>
 <figure>
-<img src="{{ '/assets/ir2/pry.jpg' | relative_url }}" alt="Opening the shell">
+<img loading="lazy" decoding="async" src="{{ '/assets/ir2/pry.jpg' | relative_url }}" alt="Opening the shell">
 <figcaption>Opening the shell.</figcaption>
 </figure>
 <figure>
-<img src="{{ '/assets/ir2/caseoff.jpg' | relative_url }}" alt="Case open with internals exposed">
+<img loading="lazy" decoding="async" src="{{ '/assets/ir2/caseoff.jpg' | relative_url }}" alt="Case open with internals exposed">
 <figcaption>Case open with internals exposed.</figcaption>
 </figure>
 <figure>
-<img src="{{ '/assets/ir2/screws2.jpg' | relative_url }}" alt="Lens and sensor assembly access">
+<img loading="lazy" decoding="async" src="{{ '/assets/ir2/screws2.jpg' | relative_url }}" alt="Lens and sensor assembly access">
 <figcaption>Lens/sensor assembly access.</figcaption>
 </figure>
 <figure>
-<img src="{{ '/assets/ir2/filter.jpg' | relative_url }}" alt="IR-cut filter removed">
+<img loading="lazy" decoding="async" src="{{ '/assets/ir2/filter.jpg' | relative_url }}" alt="IR-cut filter removed">
 <figcaption>IR-cut filter removed.</figcaption>
 </figure>
 </div>
@@ -191,23 +191,23 @@ The Sony **exported JPEG only**, which limited how aggressively I could push the
 
 <div class="figure-grid">
 <figure>
-<img src="{{ '/assets/ir2/1.jpg' | relative_url }}" alt="Sample infrared photo from DSC-H20">
+<img loading="lazy" decoding="async" src="{{ '/assets/ir2/1.jpg' | relative_url }}" alt="Sample infrared photo from DSC-H20">
 <figcaption>Sony sample (1).</figcaption>
 </figure>
 <figure>
-<img src="{{ '/assets/ir2/2.jpg' | relative_url }}" alt="Sample infrared photo from DSC-H20">
+<img loading="lazy" decoding="async" src="{{ '/assets/ir2/2.jpg' | relative_url }}" alt="Sample infrared photo from DSC-H20">
 <figcaption>Sony sample (2).</figcaption>
 </figure>
 <figure>
-<img src="{{ '/assets/ir2/3.jpg' | relative_url }}" alt="Sample infrared photo from DSC-H20">
+<img loading="lazy" decoding="async" src="{{ '/assets/ir2/3.jpg' | relative_url }}" alt="Sample infrared photo from DSC-H20">
 <figcaption>Sony sample (3).</figcaption>
 </figure>
 <figure>
-<img src="{{ '/assets/ir2/4.jpg' | relative_url }}" alt="Sample infrared photo from DSC-H20">
+<img loading="lazy" decoding="async" src="{{ '/assets/ir2/4.jpg' | relative_url }}" alt="Sample infrared photo from DSC-H20">
 <figcaption>Sony sample (4).</figcaption>
 </figure>
 <figure>
-<img src="{{ '/assets/ir2/5.jpg' | relative_url }}" alt="Sample infrared photo from DSC-H20">
+<img loading="lazy" decoding="async" src="{{ '/assets/ir2/5.jpg' | relative_url }}" alt="Sample infrared photo from DSC-H20">
 <figcaption>Sony sample (5).</figcaption>
 </figure>
 </div>

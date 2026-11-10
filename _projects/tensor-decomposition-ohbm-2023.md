@@ -38,11 +38,11 @@ In this work we applied NASCAR to **fMRI during naturalistic stimulation and at 
 
 ## Supplementary figures
 
-<p class="project-caption"><img src="{{ '/assets/projects/tensor-decomposition/gale-shapley.png' | relative_url }}" alt="Gale-Shapley matched spatial components from resting state and the movie The Present"></p>
+<p class="project-caption"><img loading="lazy" decoding="async" src="{{ '/assets/projects/tensor-decomposition/gale-shapley.jpg' | relative_url }}" alt="Gale-Shapley matched spatial components from resting state and the movie The Present"></p>
 
 Gale–Shapley matched spatial components from resting state (columns 1 and 2) and the movie *The Present*.
 
-<p class="project-caption"><img src="{{ '/assets/projects/tensor-decomposition/movie-temporal-overview.png' | relative_url }}" alt="Temporal modes from Despicable Me with top five correlated movie features"></p>
+<p class="project-caption"><img loading="lazy" decoding="async" src="{{ '/assets/projects/tensor-decomposition/movie-temporal-overview.jpg' | relative_url }}" alt="Temporal modes from Despicable Me with top five correlated movie features"></p>
 
 Temporal modes from *Despicable Me* with the five most highly correlated movie features for each component.
 

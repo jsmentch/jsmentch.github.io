@@ -1,0 +1,21 @@
+# Stations for the site radio. Add a track by copying a block and pasting its
+# Spotify URI (Share > Copy Song Link gives the id after /track/).
+tracks:
+  - title: "Tremors"
+    artists: "Jeff XR, slamzo, #sweatercore"
+    uri: "spotify:track:6WMazGTBpMM3zq5qOqlcmR"
+  - title: "ul(tram)arine"
+    artists: "Jeff XR, slamzo, #sweatercore"
+    uri: "spotify:track:37uRVTe4HYNVUN0wLyziGK"
+  - title: "Wicks Theme"
+    artists: "Jeff XR"
+    uri: "spotify:track:6Tssz2NTkGd7MjJ4GF9qL1"
+  - title: "Emily / Being Harsh (Medley)"
+    artists: "Jeff XR"
+    uri: "spotify:track:7DJO2gPRs5pHURZRmgmjJs"
+  - title: "1 More Go"
+    artists: "Jeff XR"
+    uri: "spotify:track:3R90VLdAg9muq0ftaVEOAn"
+  - title: "I Missed The Sunrise"
+    artists: "Jeff XR, L7u"
+    uri: "spotify:track:3vH0Lp3yRg1Mmq4wB1mRyA"

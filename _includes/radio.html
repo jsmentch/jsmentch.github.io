@@ -1,0 +1,50 @@
+{% assign radio_tracks = site.data.radio.tracks %}
+{% if radio_tracks and radio_tracks.size > 0 %}
+<aside class="radio" data-radio data-no-excite aria-label="Radio: music by Jeff XR">
+  <button class="radio-toggle" type="button" data-radio-toggle aria-expanded="false" aria-controls="radio-panel">
+    <span class="radio-led" aria-hidden="true"></span>
+    <span class="radio-toggle-label">Radio</span>
+    <span class="radio-toggle-now" data-radio-now>Jeff XR</span>
+  </button>
+
+  <div class="radio-panel" id="radio-panel" data-radio-panel hidden>
+    <div class="radio-head">
+      <p class="radio-station">
+        <span class="radio-freq" data-radio-freq>88.1</span>
+        <span class="radio-band">FM / Jeff XR</span>
+      </p>
+      <button class="radio-close" type="button" data-radio-close aria-label="Close radio">&times;</button>
+    </div>
+
+    <div class="radio-dial" data-radio-dial role="group" aria-label="Stations">
+      <span class="radio-needle" data-radio-needle aria-hidden="true"></span>
+    </div>
+
+    <p class="radio-track" aria-live="polite">
+      <strong data-radio-title>{{ radio_tracks[0].title }}</strong>
+      <span data-radio-artists>{{ radio_tracks[0].artists }}</span>
+    </p>
+
+    <div class="radio-player">
+      <div data-radio-embed></div>
+      <p class="radio-status" data-radio-status>Tuning in&hellip;</p>
+    </div>
+
+    <div class="radio-controls">
+      <button class="radio-flip" type="button" data-radio-prev aria-label="Previous station">
+        <svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true"><path d="M10.5 3 5 8l5.5 5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
+      <span class="radio-count" data-radio-count>1 / {{ radio_tracks.size }}</span>
+      <button class="radio-flip" type="button" data-radio-next aria-label="Next station">
+        <svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true"><path d="M5.5 3 11 8l-5.5 5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
+      <a class="radio-out" href="{{ site.spotify_artist_url }}" target="_blank" rel="noopener noreferrer">All music on Spotify</a>
+    </div>
+
+    <p class="radio-note">Plays through Spotify. Signed-in listeners get full tracks, everyone else a preview.</p>
+  </div>
+
+  <script type="application/json" data-radio-tracks>{{ radio_tracks | jsonify }}</script>
+</aside>
+<script src="{{ '/assets/js/radio.js' | relative_url }}" defer></script>
+{% endif %}

@@ -1,9 +1,11 @@
 <!DOCTYPE html>
 <html lang="en">
-{% seo %}
-  {% include head.html %}
+  <head>
+    {% include head.html %}
+    {% seo title=false %}
+  </head>
 
-  <body>
+  <body{% if page.layout == 'home' %} class="is-home"{% endif %}>
     <a class="skip-link" href="#main">Skip to content</a>
     <div class="scroll-progress" aria-hidden="true"></div>
     {% include header.html %}
@@ -11,6 +13,6 @@
     {{ content }}
 
     {% include footer.html %}
-    {% include analytics.html %}
+    {% include radio.html %}
   </body>
 </html>

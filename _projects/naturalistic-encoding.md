@@ -78,7 +78,7 @@ The main finding was not a simple global increase in sensory responsiveness. Ins
   <div class="project-disclosure-body">
     <div class="project-figure-scroll">
       <figure class="project-figure project-figure--wide">
-        <img src="{{ '/assets/projects/naturalistic-encoding/fig3.jpg' | relative_url }}" alt="Heatmap summarizing statistical effects across cortical parcels for diagnosis, social responsiveness scores, and sensory scores, with rows for visual and audio model metrics and columns for perceptual brain regions." loading="lazy" width="5444" height="2923" decoding="async">
+        <img src="{{ '/assets/projects/naturalistic-encoding/fig3.jpg' | relative_url }}" alt="Heatmap summarizing statistical effects across cortical parcels for diagnosis, social responsiveness scores, and sensory scores, with rows for visual and audio model metrics and columns for perceptual brain regions." loading="lazy" width="3200" height="1718" decoding="async">
         <figcaption>
           Summary of diagnosis-, social-phenotype-, and sensory-phenotype-related effects across cortical parcels and model metrics. The strongest interpretable pattern was a shift in visual high- versus low-level feature weighting in pSTS and adjacent social/integration regions.
           <span class="project-figure-note">Symbols indicate effects that survived statistical thresholds across motion-quality sensitivity analyses.</span>
@@ -95,7 +95,7 @@ Before interpreting group differences, I checked whether the model behaved as ex
 
 <div class="project-figure-scroll">
   <figure class="project-figure project-figure--wide">
-    <img src="{{ '/assets/projects/naturalistic-encoding/fig2_audiovsvisual.jpg' | relative_url }}" alt="Box plots and cortical surface maps showing visual versus auditory perceptual preference across cortical parcels, with visual preference in visual regions and auditory preference in auditory regions." loading="lazy" width="6449" height="1678" decoding="async">
+    <img src="{{ '/assets/projects/naturalistic-encoding/fig2_audiovsvisual.jpg' | relative_url }}" alt="Box plots and cortical surface maps showing visual versus auditory perceptual preference across cortical parcels, with visual preference in visual regions and auditory preference in auditory regions." loading="lazy" width="3200" height="833" decoding="async">
     <figcaption>
       Model-derived auditory versus visual feature weighting recovered expected sensory organization across cortical regions, providing a validation check before testing autism-related group differences.
       <span class="project-figure-source">Source: eLife reviewed preprint / dissertation</span>
@@ -129,7 +129,7 @@ Before interpreting group differences, I checked whether the model behaved as ex
 This study translated long-standing theories of autistic perception into testable model comparisons: low- versus high-level feature encoding and auditory versus visual feature weighting during movie viewing.
 
 <figure class="project-figure project-figure--compact">
-  <img src="{{ '/assets/projects/naturalistic-encoding/fig1_wcc_epf.jpg' | relative_url }}" alt="Conceptual diagram contrasting weak central coherence, enhanced perceptual functioning, visual dominance, and possible auditory dominance theories of perception in autism." loading="lazy" width="2054" height="3549" decoding="async">
+  <img src="{{ '/assets/projects/naturalistic-encoding/fig1_wcc_epf.jpg' | relative_url }}" alt="Conceptual diagram contrasting weak central coherence, enhanced perceptual functioning, visual dominance, and possible auditory dominance theories of perception in autism." loading="lazy" width="1852" height="3200" decoding="async">
   <figcaption>
     The project contrasted theories of autistic perception: whether differences reflect enhanced low-level sensory encoding, reduced integration of higher-level information, or altered balance between auditory and visual information during naturalistic perception.
     <span class="project-figure-source">Source: eLife reviewed preprint / dissertation</span>

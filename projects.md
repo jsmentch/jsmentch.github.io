@@ -251,7 +251,7 @@ wide: true
   {% comment %} Add new project cards above this row (infrared stays last). {% endcomment %}
   <a class="project-card" id="infrared-camera" href="{{ '/projects/infrared-camera-conversion/' | relative_url }}">
     <div class="project-visual">
-      <img src="{{ '/assets/ir/1.jpg' | relative_url }}" alt="IR sample: my mom and François">
+      <img loading="lazy" decoding="async" src="{{ '/assets/ir/1.jpg' | relative_url }}" alt="IR sample: my mom and François">
     </div>
     <div class="project-body">
       <p class="project-type">Photography · Hardware · DIY</p>
