@@ -7,7 +7,14 @@ Running list from the November 2026 site review. Not published (excluded in `_co
 - [x] Replace the encoding-model graphic with an interactive cortex shader (mouse-reactive, click to excite, sound)
 - [x] Add a radio that flips through Jeff XR tracks on Spotify
 - [ ] Decide whether the cortex field should also appear (dimmed) on inner pages
-- [ ] Tune the cortex by ear and eye: note scale and timbre, colours, fold size, how bright clicks get (all in `assets/js/cortex.js`)
+- [x] v1 visual: points that flow in and assemble a brain (folds, cerebellum, brainstem), scatter on click (`assets/js/cortex.js`)
+- [x] v1 sound: percussive, textural, non-tonal engine shared by the cortex and the radio (`assets/js/audio.js`)
+- [x] v1 radio: cream-and-ink set with a draggable tuner and static, opens to centre with the page blurred, nav entry and a one-time hint
+- [x] v2 visual: a turning 3D cortical surface (monochrome) with ragdoll neurons of five types wired into three networks; click waves, hold-to-charge, hover lamp and brushing (`assets/js/cortex.js`)
+- [x] v2 sound: all noise, crushed and crackly, quieter (`assets/js/audio.js`)
+- [x] v2 radio: graphite body so it stops outshining the page
+- [ ] Listen and tune: click crunch, hold crackle, neuron ticks, tuning static, and how far they drop while the radio plays (`assets/js/audio.js`)
+- [ ] Check the cortex and radio in Safari and on a real phone
 - [ ] Radio stops when navigating to another page (each page reloads the player). Keeping it playing needs in-page navigation
 - [ ] Add more stations in `_data/radio.yml` (currently the six Spotify top tracks)
 - [ ] Remove the now-unused encoding-diagram CSS from `assets/css/main.css` (`.hero-visual`, `.instrument-*`, `.encoding-diagram`, `.feature-*`, `.weight-*`, `.cortex-map` rules)

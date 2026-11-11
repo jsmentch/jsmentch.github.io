@@ -1,7 +1,12 @@
 /*
- * Site radio: flips through Jeff XR tracks using Spotify's embed.
- * Nothing is requested from Spotify until the visitor opens the radio.
- * Tracks live in _data/radio.yml.
+ * Site radio: a small set that tunes between Jeff XR tracks on Spotify.
+ *
+ * - Nothing is requested from Spotify until the visitor opens the radio.
+ * - Opening brings the set to the centre and blurs the page behind it.
+ *   Closing sends it back to its dock; the music keeps playing.
+ * - Drag the tuner (or use the arrow keys) to change station. There is
+ *   static between stations.
+ * - Tracks live in _data/radio.yml.
  */
 (function () {
   "use strict";
@@ -18,20 +23,30 @@
   var $ = function (sel) {
     return root.querySelector(sel);
   };
-  var toggle = $("[data-radio-toggle]");
-  var panel = $("[data-radio-panel]");
+  var dock = $("[data-radio-dock]");
+  var hint = $("[data-radio-hint]");
+  var backdrop = $("[data-radio-backdrop]");
+  var set = $("[data-radio-set]");
   var closeBtn = $("[data-radio-close]");
-  var dial = $("[data-radio-dial]");
-  var needle = $("[data-radio-needle]");
+  var scale = $("[data-radio-scale]");
+  var range = $("[data-radio-range]");
   var freqEl = $("[data-radio-freq]");
+  var stateEl = $("[data-radio-state]");
   var titleEl = $("[data-radio-title]");
   var artistsEl = $("[data-radio-artists]");
   var countEl = $("[data-radio-count]");
-  var nowEl = $("[data-radio-now]");
   var statusEl = $("[data-radio-status]");
   var embedEl = $("[data-radio-embed]");
+  var html = document.documentElement;
+  var audio = window.siteAudio;
+
+  var reduceMotion = false;
+  try {
+    reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  } catch (e) {}
 
   var INDEX_KEY = "radio-station";
+  var HINT_KEY = "radio-hint-seen";
   var index = 0;
   try {
     var saved = parseInt(window.sessionStorage.getItem(INDEX_KEY), 10);
@@ -44,58 +59,56 @@
   var wantPlay = false;
   var endHandled = false;
   var selectedAt = 0;
+  var isOpen = false;
+  var opener = null;
+  var tuning = false;
 
-  // Spread stations across the FM band, like presets on a dial.
+  // Stations sit evenly across the FM band, like presets.
   var LOW = 88.1;
   var HIGH = 107.9;
-  function freqFor(i) {
-    if (tracks.length === 1) return 98.1;
-    var f = LOW + ((HIGH - LOW) * i) / (tracks.length - 1);
-    return Math.round(f * 10) / 10;
-  }
-  function posFor(i) {
-    return 6 + (88 * (freqFor(i) - LOW)) / (HIGH - LOW); // percent along the dial
+  var last = Math.max(1, tracks.length - 1);
+
+  function freqAt(pos) {
+    return LOW + ((HIGH - LOW) * pos) / last;
   }
 
-  var marks = tracks.map(function (track, i) {
-    var mark = document.createElement("button");
-    mark.type = "button";
+  tracks.forEach(function (track, i) {
+    var mark = document.createElement("span");
     mark.className = "radio-mark";
-    mark.style.left = posFor(i) + "%";
-    mark.setAttribute("aria-label", "Station " + freqFor(i).toFixed(1) + ": " + track.title);
-    mark.addEventListener("click", function () {
-      select(i, true);
-    });
-    dial.appendChild(mark);
-    return mark;
+    mark.style.left = (i / last) * 100 + "%";
+    scale.appendChild(mark);
   });
+  var marks = scale.querySelectorAll(".radio-mark");
 
-  function paint() {
-    var track = tracks[index];
-    freqEl.textContent = freqFor(index).toFixed(1);
+  function paint(pos) {
+    var at = pos == null ? index : pos;
+    var nearest = Math.max(0, Math.min(tracks.length - 1, Math.round(at)));
+    var track = tracks[nearest];
+    freqEl.textContent = freqAt(at).toFixed(1);
     titleEl.textContent = track.title;
     artistsEl.textContent = track.artists || "";
-    countEl.textContent = index + 1 + " / " + tracks.length;
-    needle.style.left = posFor(index) + "%";
-    marks.forEach(function (mark, i) {
-      if (i === index) mark.setAttribute("aria-current", "true");
-      else mark.removeAttribute("aria-current");
-    });
-    nowEl.textContent = playing ? track.title : "Jeff XR";
+    countEl.textContent = nearest + 1 + " of " + tracks.length;
+    range.setAttribute("aria-valuetext", freqAt(nearest).toFixed(1) + " FM, " + track.title);
+    for (var i = 0; i < marks.length; i++) {
+      marks[i].classList.toggle("is-current", i === nearest);
+    }
+    stateEl.textContent = playing ? "On air" : "Off air";
     root.classList.toggle("is-playing", playing);
+    html.classList.toggle("radio-playing", playing);
+    dock.setAttribute(
+      "aria-label",
+      playing ? "Open the radio. Now playing: " + tracks[index].title : "Open the radio: music by Jeff XR"
+    );
+    dock.title = playing ? tracks[index].title + " / Jeff XR" : "Radio";
   }
 
   function setPlaying(value) {
     if (playing === value) return;
     playing = value;
-    window.__radioPlaying = value; // the cortex chime stays quiet while music plays
+    window.__radioPlaying = value;
+    // Music playing: the cortex percussion drops back and plays along quietly.
+    if (audio) audio.duck(value);
     paint();
-  }
-
-  function ripple() {
-    if (!window.cortexExcite) return;
-    var rect = toggle.getBoundingClientRect();
-    window.cortexExcite(rect.left + rect.width / 2, rect.top + rect.height / 2, 0.55, true);
   }
 
   function tryPlay() {
@@ -113,12 +126,13 @@
     endHandled = false;
     selectedAt = Date.now();
     wantPlay = !!autoplay;
+    range.value = String(index);
     paint();
-    ripple();
+    if (audio && isOpen) audio.tick();
     if (controller) {
       controller.loadUri(tracks[index].uri);
-      // Some browsers only allow playback from a press inside the player
-      // itself. Ask anyway; the Spotify play button remains as the fallback.
+      // Some browsers only start playback from a press inside the player
+      // itself. Ask anyway; Spotify's own play button is the fallback.
       window.setTimeout(tryPlay, 700);
     }
   }
@@ -144,10 +158,9 @@
           var ended = settled && d.duration > 0 && d.position >= d.duration - 350;
           setPlaying(!ended && !d.isPaused && !d.isBuffering && d.position > 0);
           if (!d.isPaused) wantPlay = false;
-          // Radio behaviour: when a track runs out, move to the next station.
           if (ended && !endHandled) {
             endHandled = true;
-            select(index + 1, true);
+            select(index + 1, true); // radio behaviour: on to the next station
           }
         });
       }
@@ -167,40 +180,175 @@
     script.async = true;
     script.onerror = function () {
       statusEl.hidden = false;
-      statusEl.innerHTML = "";
-      statusEl.appendChild(document.createTextNode("Spotify did not load. "));
+      statusEl.textContent = "Spotify did not load. ";
       var link = document.createElement("a");
       link.href = "https://open.spotify.com/track/" + tracks[index].uri.split(":").pop();
       link.target = "_blank";
       link.rel = "noopener noreferrer";
-      link.textContent = "Open this track on Spotify";
+      link.textContent = "Open this track there";
       statusEl.appendChild(link);
     };
     document.head.appendChild(script);
   }
 
-  function open() {
-    panel.hidden = false;
-    toggle.setAttribute("aria-expanded", "true");
+  // ---- Open and close ----------------------------------------------------
+
+  var others = [];
+
+  function setInert(value) {
+    if (value) {
+      others = Array.prototype.filter.call(document.body.children, function (el) {
+        return el !== root && el.tagName !== "SCRIPT";
+      });
+      others.forEach(function (el) {
+        el.setAttribute("inert", "");
+      });
+    } else {
+      others.forEach(function (el) {
+        el.removeAttribute("inert");
+      });
+      others = [];
+    }
+  }
+
+  // The set flies between its dock and the centre of the screen.
+  function flight() {
+    var from = dock.getBoundingClientRect();
+    var to = set.getBoundingClientRect();
+    var dx = from.left + from.width / 2 - (to.left + to.width / 2);
+    var dy = from.top + from.height / 2 - (to.top + to.height / 2);
+    var s = Math.max(0.08, from.width / Math.max(1, to.width));
+    return "translate(" + dx + "px, " + dy + "px) scale(" + s + ") rotate(8deg)";
+  }
+
+  var anim = null;
+
+  function open(from) {
+    if (isOpen) return;
+    isOpen = true;
+    opener = from || dock;
+    dismissHint();
     root.classList.add("is-open");
+    html.classList.add("radio-open");
+    setInert(true);
     loadApi();
-    ripple();
+    paint();
+
+    if (anim) anim.cancel();
+    if (set.animate && !reduceMotion) {
+      anim = set.animate(
+        [
+          { transform: flight(), opacity: 0.2 },
+          { transform: "none", opacity: 1 }
+        ],
+        { duration: 620, easing: "cubic-bezier(0.2, 1.35, 0.35, 1)" }
+      );
+    }
+    window.setTimeout(function () {
+      if (isOpen) range.focus({ preventScroll: true });
+    }, 60);
   }
 
   function close() {
-    panel.hidden = true; // the player keeps running, so music continues
-    toggle.setAttribute("aria-expanded", "false");
-    root.classList.remove("is-open");
+    if (!isOpen) return;
+    isOpen = false;
+    stopStatic();
+    html.classList.remove("radio-open");
+    setInert(false);
+
+    function done() {
+      root.classList.remove("is-open"); // hidden, but the player keeps running
+    }
+    if (anim) anim.cancel();
+    if (set.animate && !reduceMotion) {
+      anim = set.animate(
+        [
+          { transform: "none", opacity: 1 },
+          { transform: flight(), opacity: 0 }
+        ],
+        { duration: 300, easing: "cubic-bezier(0.5, 0, 0.8, 0.4)" }
+      );
+      anim.onfinish = done;
+    } else {
+      done();
+    }
+    if (opener && opener.focus) opener.focus({ preventScroll: true });
   }
 
-  toggle.addEventListener("click", function () {
-    if (panel.hidden) open();
-    else close();
+  document.addEventListener("click", function (e) {
+    var trigger = e.target.closest && e.target.closest("[data-radio-open]");
+    if (!trigger) return;
+    e.preventDefault();
+    if (isOpen) close();
+    else open(trigger);
   });
-  closeBtn.addEventListener("click", function () {
-    close();
-    toggle.focus();
+  backdrop.addEventListener("click", close);
+  closeBtn.addEventListener("click", close);
+
+  document.addEventListener("keydown", function (e) {
+    if (!isOpen) return;
+    if (e.key === "Escape") {
+      e.preventDefault();
+      close();
+    } else if (e.key === "Tab") {
+      // Keep focus inside the set while it is open.
+      var items = set.querySelectorAll("button, a[href], input");
+      if (!items.length) return;
+      var first = items[0];
+      var lastItem = items[items.length - 1];
+      var activeEl = document.activeElement;
+      if (activeEl && activeEl.tagName === "IFRAME") return;
+      if (e.shiftKey && activeEl === first) {
+        e.preventDefault();
+        lastItem.focus();
+      } else if (!e.shiftKey && activeEl === lastItem) {
+        e.preventDefault();
+        first.focus();
+      }
+    }
   });
+
+  // ---- Tuning ------------------------------------------------------------
+
+  function stopStatic() {
+    tuning = false;
+    if (audio) audio.setStatic(0);
+  }
+
+  range.addEventListener("input", function () {
+    var pos = parseFloat(range.value);
+    var off = Math.abs(pos - Math.round(pos)); // 0 on a station, 0.5 between two
+    tuning = true;
+    paint(pos);
+    root.classList.toggle("is-between", off > 0.12);
+    if (audio) audio.setStatic(Math.min(1, off * 2.4));
+  });
+
+  function settle() {
+    if (!tuning) return;
+    var target = Math.round(parseFloat(range.value));
+    stopStatic();
+    root.classList.remove("is-between");
+    if (target !== index) select(target, true);
+    else {
+      range.value = String(index);
+      paint();
+    }
+  }
+  range.addEventListener("change", settle);
+  range.addEventListener("pointerup", settle);
+  range.addEventListener("blur", settle);
+
+  // Arrow keys step station to station instead of creeping along the dial.
+  range.addEventListener("keydown", function (e) {
+    var step = 0;
+    if (e.key === "ArrowRight" || e.key === "ArrowUp") step = 1;
+    if (e.key === "ArrowLeft" || e.key === "ArrowDown") step = -1;
+    if (!step) return;
+    e.preventDefault();
+    select(index + step, true);
+  });
+
   $("[data-radio-prev]").addEventListener("click", function () {
     select(index - 1, true);
   });
@@ -208,17 +356,43 @@
     select(index + 1, true);
   });
 
-  root.addEventListener("keydown", function (e) {
-    if (panel.hidden) return;
-    if (e.key === "Escape") {
-      close();
-      toggle.focus();
-    } else if (e.key === "ArrowRight") {
-      select(index + 1, true);
-    } else if (e.key === "ArrowLeft") {
-      select(index - 1, true);
-    }
-  });
+  // ---- A nudge towards the radio -----------------------------------------
 
+  var hintTimer = 0;
+
+  function dismissHint() {
+    window.clearTimeout(hintTimer);
+    if (hint.hidden) return;
+    hint.classList.remove("is-shown");
+    window.setTimeout(function () {
+      hint.hidden = true;
+    }, 400);
+  }
+
+  var seen = false;
+  try {
+    seen = window.sessionStorage.getItem(HINT_KEY) === "1";
+  } catch (e) {}
+
+  if (!seen) {
+    window.setTimeout(function () {
+      if (isOpen) return;
+      try {
+        window.sessionStorage.setItem(HINT_KEY, "1");
+      } catch (e) {}
+      hint.hidden = false;
+      // Next frame, so the entrance transition runs.
+      window.requestAnimationFrame(function () {
+        hint.classList.add("is-shown");
+        root.classList.add("is-nudging");
+      });
+      hintTimer = window.setTimeout(function () {
+        dismissHint();
+        root.classList.remove("is-nudging");
+      }, 9000);
+    }, 4200);
+  }
+
+  range.value = String(index);
   paint();
 })();
