@@ -13,6 +13,9 @@ Running list from the November 2026 site review. Not published (excluded in `_co
 - [x] v2 visual: a turning 3D cortical surface (monochrome) with ragdoll neurons of five types wired into three networks; click waves, hold-to-charge, hover lamp and brushing (`assets/js/cortex.js`)
 - [x] v2 sound: all noise, crushed and crackly, quieter (`assets/js/audio.js`)
 - [x] v2 radio: graphite body so it stops outshining the page
+- [x] Background lab at `/lab/`: live controls for the cortex and its sound, presets, copy settings (`lab/index.html`, `assets/js/lab.js`)
+- [x] Dial in the background in the lab, then bake the chosen settings into the defaults in `assets/js/cortex.js` and `assets/js/audio.js`
+- [ ] Decide whether `/lab/` ships (it is `noindex` and unlinked) or is removed before launch
 - [ ] Listen and tune: click crunch, hold crackle, neuron ticks, tuning static, and how far they drop while the radio plays (`assets/js/audio.js`)
 - [ ] Check the cortex and radio in Safari and on a real phone
 - [ ] Radio stops when navigating to another page (each page reloads the player). Keeping it playing needs in-page navigation

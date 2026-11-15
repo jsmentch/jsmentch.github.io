@@ -10,8 +10,26 @@
   "use strict";
 
   var KEY = "cortex-sound";
-  var LEVEL = 0.5; // overall loudness
-  var DUCKED = 0.22; // while the radio plays
+
+  // Tunable from the lab page (window.SITE_AUDIO_PARAMS, then siteAudio.params).
+  var DEFAULTS = {
+    level: 0.43, // overall loudness
+    duck: 0.76, // share of the level kept while the radio plays
+    crunch: 0.59, // crushed, distorted body of a hit
+    thud: 0.61, // low unpitched thump
+    crackle: 1, // gravel tail after a hit, and the hold crackle
+    room: 0.3, // reverb
+    ticks: 1 // neurons firing
+  };
+  var params = {};
+  var k;
+  for (k in DEFAULTS) params[k] = DEFAULTS[k];
+  var given = window.SITE_AUDIO_PARAMS || {};
+  for (k in given) if (k in DEFAULTS) params[k] = given[k];
+
+  function level() {
+    return ducked ? params.level * params.duck : params.level;
+  }
 
   var enabled = true;
   try {
@@ -21,6 +39,8 @@
   var ctx = null;
   var master = null;
   var crush = null;
+  var crushOut = null;
+  var wet = null;
   var send = null;
   var white = null;
   var crushed = null;
@@ -54,7 +74,7 @@
     ctx = new Ctx();
 
     master = ctx.createGain();
-    master.gain.value = ducked ? DUCKED : LEVEL;
+    master.gain.value = level();
     var comp = ctx.createDynamicsCompressor();
     comp.threshold.value = -20;
     comp.knee.value = 10;
@@ -73,8 +93,8 @@
       curve[i] = Math.round(y * 5) / 5;
     }
     crush.curve = curve;
-    var crushOut = ctx.createGain();
-    crushOut.gain.value = 0.42;
+    crushOut = ctx.createGain();
+    crushOut.gain.value = 0.42 * params.crunch;
     crush.connect(crushOut);
     crushOut.connect(master);
 
@@ -119,8 +139,8 @@
     }
     var verb = ctx.createConvolver();
     verb.buffer = ir;
-    var wet = ctx.createGain();
-    wet.gain.value = 0.3;
+    wet = ctx.createGain();
+    wet.gain.value = params.room;
     send = ctx.createGain();
     send.connect(verb);
     verb.connect(wet);
@@ -215,26 +235,26 @@
       freq: rand(500, 1500) + bright * 1600,
       q: rand(0.5, 1.4),
       dur: 0.03 + 0.09 * open * rand(0.6, 1),
-      gain: 0.5 * s,
+      gain: 0.5 * s * Math.min(1.5, params.crunch),
       pan: pan,
       crunch: 1,
       wet: 0.05 * open
     });
 
     // Thud: low, short, unpitched.
-    if (open > 0.3) {
-      burst(t, { buf: white, type: "lowpass", freq: rand(110, 170), q: 0.7, dur: 0.09, attack: 0.004, gain: 0.9 * s * open, pan: pan * 0.3 });
+    if (open > 0.3 && params.thud > 0.01) {
+      burst(t, { buf: white, type: "lowpass", freq: rand(110, 170), q: 0.7, dur: 0.09, attack: 0.004, gain: 0.9 * s * open * params.thud, pan: pan * 0.3 });
     }
 
     // Crackle: a tail of gravel.
-    burst(t + 0.01, {
+    if (params.crackle > 0.01) burst(t + 0.01, {
       buf: gravel,
       rate: rand(0.8, 1.7),
       type: "highpass",
       freq: rand(1200, 3600),
       q: 0.4,
-      dur: 0.07 + 0.34 * open * Math.random(),
-      gain: (0.26 + 0.2 * open) * s,
+      dur: (0.07 + 0.34 * open * Math.random()) * Math.max(0.3, params.crackle),
+      gain: (0.26 + 0.2 * open) * s * Math.min(1.5, params.crackle),
       pan: rand(-0.8, 0.8),
       crunch: 0.6,
       wet: 0.08
@@ -251,8 +271,8 @@
     lastHit = ctx.currentTime;
     burst(t, { buf: white, type: "highpass", freq: 3500, q: 0.5, dur: 0.012, gain: 0.35, pan: pan });
     burst(t, { buf: crushed, rate: rand(0.3, 0.6), type: "bandpass", freq: 700, q: 0.5, dur: 0.16 + 0.22 * c, gain: 0.55 + 0.25 * c, pan: pan, crunch: 1, wet: 0.1 });
-    burst(t, { buf: white, type: "lowpass", freq: 120, q: 0.8, dur: 0.16 + 0.12 * c, attack: 0.005, gain: 1.0, pan: 0 });
-    burst(t + 0.02, { buf: gravel, rate: rand(0.6, 1.0), type: "highpass", freq: 900, q: 0.4, dur: 0.45 + 0.6 * c, gain: 0.4 + 0.2 * c, pan: -pan * 0.5, crunch: 0.7, wet: 0.14 });
+    if (params.thud > 0.01) burst(t, { buf: white, type: "lowpass", freq: 120, q: 0.8, dur: 0.16 + 0.12 * c, attack: 0.005, gain: params.thud, pan: 0 });
+    burst(t + 0.02, { buf: gravel, rate: rand(0.6, 1.0), type: "highpass", freq: 900, q: 0.4, dur: (0.45 + 0.6 * c) * Math.max(0.3, params.crackle), gain: (0.4 + 0.2 * c) * Math.min(1.5, params.crackle), pan: -pan * 0.5, crunch: 0.7, wet: 0.14 });
     burst(t + 0.05, { buf: gravel, rate: rand(1.3, 2.0), type: "highpass", freq: 3200, q: 0.4, dur: 0.3 + 0.5 * c, gain: 0.25, pan: pan, crunch: 0.4, wet: 0.1 });
   }
 
@@ -293,14 +313,14 @@
     }
     var a = Math.max(0, Math.min(1, amount));
     var now = ctx.currentTime;
-    chargeNodes.gain.gain.setTargetAtTime(0.06 + 0.3 * a, now, 0.05);
+    chargeNodes.gain.gain.setTargetAtTime((0.06 + 0.3 * a) * Math.min(1.5, params.crackle), now, 0.05);
     chargeNodes.hp.frequency.setTargetAtTime(500 + 3800 * a, now, 0.05);
     chargeNodes.src.playbackRate.setTargetAtTime(0.7 + 1.6 * a, now, 0.05);
   }
 
   // A neuron firing: one tiny crushed grain.
   function spike(nx) {
-    if (!enabled || !ctx) return;
+    if (!enabled || !ctx || params.ticks <= 0.01) return;
     var now = ctx.currentTime;
     if (now - lastSpike < 0.022) return;
     lastSpike = now;
@@ -311,7 +331,7 @@
       freq: rand(1800, 5200),
       q: 1.2,
       dur: rand(0.006, 0.016),
-      gain: rand(0.05, 0.11),
+      gain: rand(0.05, 0.11) * params.ticks,
       pan: ((nx == null ? 0.5 : nx) - 0.5) * 1.6,
       crunch: 0.8
     });
@@ -406,7 +426,16 @@
     // While music plays, everything here drops back.
     duck: function (value) {
       ducked = !!value;
-      if (master) master.gain.setTargetAtTime(ducked ? DUCKED : LEVEL, ctx.currentTime, 0.15);
+      if (master) master.gain.setTargetAtTime(level(), ctx.currentTime, 0.15);
+    },
+    params: params,
+    defaults: DEFAULTS,
+    // Apply level, crunch and room changes to a running context.
+    refresh: function () {
+      if (!ctx) return;
+      master.gain.setTargetAtTime(level(), ctx.currentTime, 0.05);
+      crushOut.gain.setTargetAtTime(0.42 * params.crunch, ctx.currentTime, 0.05);
+      wet.gain.setTargetAtTime(params.room, ctx.currentTime, 0.05);
     },
     hit: hit,
     release: release,

@@ -59,6 +59,70 @@
     return v < a ? a : v > b ? b : v;
   }
 
+  // ---- Tunable parameters ------------------------------------------------
+  // These are the live site's settings. The lab page (/lab/) overrides them
+  // through window.CORTEX_PARAMS and edits them live via window.cortex.params.
+  var DEFAULTS = {
+    // Surface
+    foldSize: 95, // fold wavelength on screen, px (phones use 72% of this)
+    foldWidth: 0.12, // how round the gyri are
+    depth: 0.38, // how deep the folds read
+    detail: 0.085, // fine undulation on the crowns
+    detailScale: 2.2,
+    morph: 0, // how fast the folds drift
+    // Light
+    brightness: 1.1,
+    sulcusShade: 0.06, // light left in the bottom of a sulcus
+    shine: 0.28,
+    rim: 0.2,
+    warmth: 0, // -1 cool to 1 warm
+    lightAzimuth: 58, // degrees, 0 = from the right, 90 = from above
+    lightElevation: 37,
+    // Framing
+    size: 0.68,
+    horizon: 0.23, // where the top of the surface sits in the hero, 0 = top
+    centerX: 0.32,
+    textShield: 0.2, // how far the surface dims behind the copy (1 = not at all)
+    fadeLength: 110,
+    // Motion
+    spin: 0.088,
+    tilt: 2.95,
+    flick: 1,
+    lamp: 0.35, // the pointer's light on the surface
+    lampSize: 0.03,
+    // Waves and colour
+    waveSpeed: 0.6,
+    waveLife: 4.1,
+    waveWidth: 0.045,
+    waveDecay: 0.5,
+    swell: 2.8,
+    foldKick: 0.55,
+    colorAmount: 1,
+    hueStep: 0.5,
+    holdTime: 2,
+    holdPress: 0.9,
+    storm: 1, // how long the whole network keeps firing after a charged release
+    // Neurons
+    neurons: true,
+    neuronCount: 2.5,
+    cellScale: 0.85,
+    stiffness: 0.2,
+    damping: 1,
+    push: 1,
+    axonOpacity: 0.13,
+    cellOpacity: 0.26,
+    links: 0.5,
+    roots: 0.38,
+    refractory: 0.9,
+    pulseSpeed: 790,
+    netHue: 0.56
+  };
+  var P = {};
+  var key;
+  for (key in DEFAULTS) P[key] = DEFAULTS[key];
+  var overrides = window.CORTEX_PARAMS || {};
+  for (key in overrides) if (key in DEFAULTS) P[key] = overrides[key];
+
   // ---- Surface shader ----------------------------------------------------
 
   var NW = 8; // fold waves
@@ -89,6 +153,11 @@
     "uniform float uFoldW;", // half-width of a fold's shoulder, radians
     "uniform float uDetK;",
     "uniform vec2 uFade;", // screen y where the surface dissolves: start, end
+    "uniform vec4 uLook;", // depth, detail, sulcus shade, shine
+    "uniform vec4 uLook2;", // brightness, rim, lamp, colour amount
+    "uniform vec4 uLook3;", // swell, fold kick, hold press, lamp size
+    "uniform vec4 uFrame;", // text shield, warmth
+    "uniform vec3 uLight;",
     "",
     "vec3 hue(float h) {",
     "  h = fract(h) * 5.0;",
@@ -116,10 +185,10 @@
     "",
     // Dissolve at the bottom of the hero, and stay quiet behind the copy.
     "  float mask = 1.0 - smoothstep(uFade.x, uFade.y, p.y);",
-    "  mask *= mix(1.0, mix(0.16, 1.0, smoothstep(0.27, 0.6, p.x / uRes.x)), uWide);",
+    "  mask *= mix(1.0, mix(uFrame.x, 1.0, smoothstep(0.27, 0.6, p.x / uRes.x)), uWide);",
     "  mask *= uGain;",
     "",
-    "  vec3 L = normalize(vec3(0.42, 0.68, 0.6));",
+    "  vec3 L = uLight;",
     "  vec3 col = bg;",
     "",
     "  if (r < 1.0) {",
@@ -144,7 +213,7 @@
     "        act += ring + inner;",
     "        actCol += (ring + inner) * hue(rb.y);",
     "        kick += ring;",
-    "        push += t * ring * x * 1.5;", // a real swell: the surface tilts as the wave passes
+    "        push += t * ring * x * uLook3.x;", // a real swell: the surface tilts as the wave passes
     "      }",
     "    }",
     "",
@@ -157,10 +226,10 @@
     "    act += blob * 1.1;",
     "    actCol += blob * 1.1 * mix(hue(uHoldHue), vec3(1.0, 0.95, 0.9), uHold.w * 0.55);",
     "    kick += blob * 1.6;",
-    "    push -= ht * blob * 0.9;", // pressed in
+    "    push -= ht * blob * uLook3.z;", // pressed in
     "",
     "    float vang = acos(clamp(dot(q, uHover.xyz), -1.0, 1.0));",
-    "    float spot = uHover.w * exp(-(vang * vang) / 0.03);",
+    "    float spot = uHover.w * exp(-(vang * vang) / uLook3.w);",
     "    kick += spot * 0.6;",
     "",
     // Folds: a 3D random-wave field on the sphere.
@@ -169,7 +238,7 @@
     "    vec3 g = vec3(0.0);",
     "    for (int i = 0; i < NW; i++) {",
     "      vec4 w = uWave[i];",
-    "      float ph = dot(w.xyz, qw) + w.w + kick * (0.9 + 0.3 * float(i));",
+    "      float ph = dot(w.xyz, qw) + w.w + kick * uLook3.y * (0.9 + 0.3 * float(i));",
     "      h += cos(ph);",
     "      g -= w.xyz * sin(ph);",
     "    }",
@@ -180,7 +249,7 @@
     "    float prof = sqrt(max(1.0 - (1.0 - x) * (1.0 - x), 0.0));", // rounded shoulder
     "    float slope = (1.0 - x) / max(prof, 0.3);",
     "    vec3 up = (h < 0.0 ? -1.0 : 1.0) * gt / gl;",
-    "    vec3 nl = q - 0.78 * slope * up;",
+    "    vec3 nl = q - uLook.x * slope * up;",
     "",
     // Fine undulation on the crowns.
     "    vec3 gd = vec3(0.0);",
@@ -189,29 +258,30 @@
     "      gd -= w.xyz * sin(dot(w.xyz, qw) + w.w);",
     "    }",
     "    gd -= q * dot(gd, q);",
-    "    nl -= gd * (0.05 / uDetK) * prof;",
+    "    nl -= gd * (uLook.y / uDetK) * prof;",
     "    nl += push;",
     "",
     "    vec3 n = normalize(nl);",
     "    vec3 nv = n * uRot;", // back to view space
     "    float diff = smoothstep(-0.3, 1.0, dot(nv, L));",
-    "    float ao = mix(0.1, 1.0, smoothstep(0.0, 0.5, x));",
+    "    float ao = mix(uLook.z, 1.0, smoothstep(0.0, 0.5, x));",
     "    float term = smoothstep(-0.25, 0.7, dot(n0, L));",
     "    vec3 hv = normalize(L + vec3(0.0, 0.0, 1.0));",
     "    float spec = pow(max(dot(nv, hv), 0.0), 42.0);",
     "    float fres = pow(1.0 - n0.z, 3.0);",
-    "    float gray = (0.04 + 0.66 * diff * diff) * ao * term + spec * 0.34 * term * ao + fres * 0.1 * term;",
-    "    gray += spot * (0.17 * ao + spec * 0.4);", // the pointer is a small lamp
-    "    vec3 surf = vec3(gray * 0.82);",
+    "    float gray = (0.04 + 0.66 * diff * diff) * ao * term + spec * uLook.w * term * ao + fres * uLook2.y * term;",
+    "    gray += spot * uLook2.z * (ao + spec * 2.35);", // the pointer is a small lamp
+    "    vec3 tint = vec3(1.0 + 0.1 * uFrame.y, 1.0 + 0.02 * uFrame.y, 1.0 - 0.14 * uFrame.y);",
+    "    vec3 surf = gray * 0.82 * uLook2.x * tint;",
     "",
     // Colour only where there is activity.
     "    float a = clamp(act, 0.0, 1.6);",
     "    vec3 pc = actCol / max(act, 1e-3);",
     "    float amt = smoothstep(0.02, 0.55, a);",
     "    vec3 lit = pc * (0.16 + 0.95 * diff * ao + spec * 0.5);",
-    "    surf = mix(surf, lit, amt * 0.9);",
+    "    surf = mix(surf, lit, amt * uLook2.w);",
     "    float edge = 1.0 - smoothstep(0.0, 0.3, x);",
-    "    surf += pc * edge * a * 0.5;",
+    "    surf += pc * edge * a * 0.55 * uLook2.w;",
     "    surf += vec3(1.0, 0.95, 0.9) * max(a - 1.0, 0.0) * 0.6 * ao;",
     "",
     "    float aa = smoothstep(1.0, 1.0 - 2.5 / uSphere.z, r);",
@@ -259,7 +329,8 @@
   var U = {};
   [
     "uRes", "uScale", "uSphere", "uRot", "uWave", "uDet", "uRip", "uRipB", "uHover", "uHold",
-    "uHoldHue", "uTime", "uGain", "uWide", "uFoldW", "uDetK", "uFade"
+    "uHoldHue", "uTime", "uGain", "uWide", "uFoldW", "uDetK", "uFade",
+    "uLook", "uLook2", "uLook3", "uFrame", "uLight"
   ].forEach(function (name) {
     U[name] = gl.getUniformLocation(prog, name);
   });
@@ -279,8 +350,9 @@
   var sphere = { x: 0, y: 0, R: 600 }; // page coordinates
   var stageBox = { left: 0, top: 0, width: 1, height: 1 };
   var domeTop = 0;
-  var foldW = 0.02;
+  var foldPxNow = 56;
   var detK = 200;
+  var morphT = 0; // fold drift clock, so changing its speed does not jump
   var waves = [];
   var waveData = new Float32Array(NW * 4);
   var detData = new Float32Array(ND * 4);
@@ -345,8 +417,8 @@
       strength: strength,
       hue: hue,
       gen: gen,
-      speed: opts.speed || 0.6, // radians per second
-      life: opts.life || 3.6,
+      speed: ((opts.speed || 0.6) * P.waveSpeed) / 0.6, // radians per second
+      life: ((opts.life || 3.6) * P.waveLife) / 3.6,
       hits: {}
     });
     if (ripples.length > 14) ripples.shift();
@@ -355,11 +427,21 @@
   // ---- Neurons -----------------------------------------------------------
 
   var NET_HUE = [0.07, 0.42, 0.84];
+  function netHue(i) {
+    return (NET_HUE[i] + P.netHue) % 1;
+  }
   var neurons = [];
   var nodes = [];
   var conns = [];
   var pulses = [];
   var later = [];
+  // After a charged release every neuron fires, over and over, then settles.
+  var storm = { t0: 0, until: 0, rate: 0 };
+  var lastSpikeAt = 0;
+  var lastRootRipple = 0;
+  function storming() {
+    return time < storm.until;
+  }
   var cluster = { x: 0, y: 0 };
   var FOCAL = 900;
 
@@ -435,7 +517,7 @@
   var UP = -Math.PI / 2;
 
   function makeNeuron(type, x, y, z, sc) {
-    var n = { type: type, home: { x: x, y: y, z: z }, nodes: [], conns: [], root: null, glow: 0, ref: 0, net: 0, r: 5 * sc, tilt: rnd(-0.22, 0.22), bob: Math.random() * TAU, sc: sc };
+    var n = { id: neurons.length, type: type, home: { x: x, y: y, z: z }, nodes: [], conns: [], root: null, glow: 0, ref: 0, net: 0, r: 5 * sc, tilt: rnd(-0.22, 0.22), bob: Math.random() * TAU, sc: sc };
     var soma = addNode(n, null, 0, 0, 0, 1.7);
     n.soma = soma;
     var i;
@@ -516,7 +598,7 @@
       sag: { x: rnd(-14, 14), y: rnd(-6, 10), z: rnd(-10, 10) },
       x: (a.home.x + tx) / 2,
       y: (a.home.y + ty) / 2,
-      z: a.home.z * 0.5,
+      z: a.home.z,
       vx: 0,
       vy: 0,
       vz: 0,
@@ -545,6 +627,67 @@
     return dx * dx + dy * dy;
   }
 
+  // Depth is a gentle, smooth surface across the stage: neighbours sit at
+  // similar depths, so tilting the cluster bends the network instead of
+  // sliding cells past each other (which made links cross).
+  var depthPhase = 0;
+  function depthAt(x, y) {
+    var b = stageBox;
+    var u = (x - b.left) / Math.max(1, b.width);
+    var v = (y - b.top) / Math.max(1, b.height);
+    var amp = Math.min(130, b.width * 0.11);
+    return amp * Math.sin(u * 4.6 + depthPhase) * (0.75 + 0.25 * Math.cos(v * 3 + depthPhase * 1.7));
+  }
+
+  // Do segments p1-p2 and p3-p4 cross (ignoring shared ends)?
+  function crosses(p1, p2, p3, p4) {
+    function side(a, b, c) {
+      return (b.x - a.x) * (c.y - a.y) - (b.y - a.y) * (c.x - a.x);
+    }
+    var d1 = side(p3, p4, p1);
+    var d2 = side(p3, p4, p2);
+    var d3 = side(p1, p2, p3);
+    var d4 = side(p1, p2, p4);
+    return d1 * d2 < 0 && d3 * d4 < 0;
+  }
+
+  // Distance from point c to segment a-b.
+  function segDist(a, b, c) {
+    var dx = b.x - a.x;
+    var dy = b.y - a.y;
+    var t = clamp(((c.x - a.x) * dx + (c.y - a.y) * dy) / Math.max(1e-6, dx * dx + dy * dy), 0, 1);
+    var ex = a.x + dx * t - c.x;
+    var ey = a.y + dy * t - c.y;
+    return Math.sqrt(ex * ex + ey * ey);
+  }
+
+  // A new line must not cross an existing one or pass through another cell.
+  function clearPath(a, p, q, b, room) {
+    var pad = 30 * lastScale * (room || 1);
+    for (var i = 0; i < conns.length; i++) {
+      var c = conns[i];
+      var c1 = c.a.home;
+      var c2 = c.root ? { x: c.tx, y: c.ty } : c.b.home;
+      if (c.a === a || c.a === b || c.b === a || c.b === b) continue;
+      if (crosses(p, q, c1, c2)) return false;
+      // Also keep a little air between nearly parallel neighbours.
+      if (segDist(p, q, c1) < pad * 0.5 || segDist(p, q, c2) < pad * 0.5) return false;
+    }
+    for (var j = 0; j < neurons.length; j++) {
+      var n = neurons[j];
+      if (n === a || n === b) continue;
+      if (segDist(p, q, n.home) < pad) return false;
+    }
+    return true;
+  }
+  var lastScale = 1;
+
+  function tryLink(a, b) {
+    if (!clearPath(a, a.home, b.home, b)) return false;
+    link(a, b);
+    return true;
+  }
+
   function buildNeurons() {
     neurons = [];
     nodes = [];
@@ -553,8 +696,10 @@
     later = [];
 
     var b = stageBox;
-    var count = wide ? clamp(Math.round((b.width * b.height) / 25000), 10, 17) : 7;
-    var sc = wide ? clamp(b.width / 540, 0.85, 1.15) : 0.7;
+    var count = Math.round((wide ? clamp(Math.round((b.width * b.height) / 25000), 10, 17) : 7) * P.neuronCount);
+    var sc = (wide ? clamp(b.width / 540, 0.85, 1.15) : 0.7) * P.cellScale;
+    lastScale = sc;
+    depthPhase = Math.random() * TAU;
     var x0 = b.left + b.width * 0.04;
     var x1 = b.left + b.width * 0.96;
     var y0 = b.top + b.height * (wide ? 0.06 : 0.04);
@@ -583,7 +728,7 @@
       spots.push(best);
     }
     spots.forEach(function (s, k) {
-      makeNeuron(order[k % order.length], s.x, s.y, rnd(-130, 130), sc);
+      makeNeuron(order[k % order.length], s.x, s.y, depthAt(s.x, s.y) + rnd(-12, 12), sc);
     });
 
     // Three networks, split left to right.
@@ -594,7 +739,10 @@
       n.net = Math.min(2, Math.floor((k / byX.length) * 3));
     });
 
-    // Within a network, wire each neuron to its nearest neighbours.
+    // Within a network, wire each neuron to its nearest neighbours. Shortest
+    // links go first and a link is skipped if it would cross another line,
+    // so every network stays a clean, uncrossed web.
+    var wants = [];
     neurons.forEach(function (n) {
       var same = neurons
         .filter(function (m) {
@@ -603,38 +751,51 @@
         .sort(function (p, q) {
           return dist2(n, p) - dist2(n, q);
         });
-      if (same[0]) link(n, same[0]);
-      if (same[1] && Math.random() < 0.5) link(n, same[1]);
+      for (var k = 0; k < same.length && k < 4; k++) {
+        var keep = k === 0 ? 1 : k === 1 ? P.links : k === 2 ? P.links - 0.5 : 0;
+        wants.push({ a: n, b: same[k], d: dist2(n, same[k]), first: k === 0, keep: Math.random() < keep });
+      }
     });
-    // One bridge between neighbouring networks.
+    wants.sort(function (p, q) {
+      return p.d - q.d;
+    });
+    var linked = {};
+    wants.forEach(function (w) {
+      // Everyone gets one link if any uncrossed one exists.
+      if (!w.keep && (linked[w.a.id] || !w.first)) return;
+      if (tryLink(w.a, w.b)) {
+        linked[w.a.id] = true;
+        linked[w.b.id] = true;
+      }
+    });
+    // One bridge between neighbouring networks: the shortest one that crosses nothing.
     [[0, 1], [1, 2]].forEach(function (pair) {
-      var bestPair = null;
-      var bestDist = 1e12;
+      var pairs = [];
       neurons.forEach(function (p) {
         if (p.net !== pair[0]) return;
         neurons.forEach(function (q) {
-          if (q.net !== pair[1]) return;
-          var dd = dist2(p, q);
-          if (dd < bestDist) {
-            bestDist = dd;
-            bestPair = [p, q];
-          }
+          if (q.net === pair[1]) pairs.push([p, q, dist2(p, q)]);
         });
       });
-      if (bestPair) link(bestPair[0], bestPair[1]);
+      pairs.sort(function (p, q) {
+        return p[2] - q[2];
+      });
+      for (var k = 0; k < pairs.length; k++) if (tryLink(pairs[k][0], pairs[k][1])) break;
     });
 
     // The lowest ones send an axon down into the surface.
     var byY = neurons.slice().sort(function (p, q) {
       return q.home.y - p.home.y;
     });
-    var roots = Math.max(3, Math.ceil(count * 0.38));
+    var roots = Math.ceil(count * P.roots);
     for (var r = 0; r < roots && r < byY.length; r++) {
       var n = byY[r];
       var tx = n.home.x + rnd(-26, 26);
       var top = domeY(tx);
       if (top == null) continue;
-      rootTo(n, tx, Math.max(top + rnd(22, 60) * sc, n.home.y + 34 * sc));
+      var ty = Math.max(top + rnd(22, 60) * sc, n.home.y + 34 * sc);
+      if (!clearPath(n, n.home, { x: tx, y: ty }, null, 2)) continue; // roots need more room: their feet get tucked
+      rootTo(n, tx, ty);
     }
 
     var sx = 0;
@@ -649,14 +810,14 @@
 
   function sendPulse(c, from, gen, hue, upward) {
     var dir = upward ? -1 : c.a === from ? 1 : -1;
-    pulses.push({ c: c, dir: dir, t: 0, dur: clamp(c.len / 300, 0.16, 0.8), gen: gen, hue: hue });
+    pulses.push({ c: c, dir: dir, t: 0, dur: clamp(c.len / P.pulseSpeed, 0.06, 2), gen: gen, hue: hue });
     c.glow = 1;
     c.hue = hue;
   }
 
   function fire(n, gen, from) {
     if (time < n.ref || gen > 7) return false;
-    n.ref = time + 0.9;
+    n.ref = time + P.refractory * (storming() ? 0.2 : 1);
     n.glow = 1;
     // A physical twitch: the dendrites flick outward.
     for (var i = 1; i < n.nodes.length; i++) {
@@ -665,8 +826,12 @@
       nd.vy += nd.oy * 3.2;
       nd.vz += nd.oz * 3.2;
     }
-    if (audio) audio.spike(n.soma.sx / Math.max(1, cssW));
-    var hue = NET_HUE[n.net];
+    // In a storm, thin the clicks out so it stays a texture, not a wall.
+    if (audio && (!storming() || time - lastSpikeAt > 0.035)) {
+      lastSpikeAt = time;
+      audio.spike(n.soma.sx / Math.max(1, cssW));
+    }
+    var hue = netHue(n.net);
     n.conns.forEach(function (c) {
       if (c === from) return;
       later.push({
@@ -698,9 +863,13 @@
       later = keep;
     }
 
+    // The storm: every cell keeps firing on its own, fading out over its length.
+    var sk = storming() ? (storm.until - time) / Math.max(0.01, storm.until - storm.t0) : 0;
+
     for (i = 0; i < neurons.length; i++) {
       var n = neurons[i];
       n.glow *= Math.exp(-2.4 * dt);
+      if (sk > 0 && Math.random() < storm.rate * sk * dt) fire(n, 2, null);
       // Brushing a cell body is enough to set it off.
       if (pe > 0.36) {
         var ddx = n.soma.sx - px;
@@ -721,15 +890,15 @@
         tx = nd.p.x + nd.ox;
         ty = nd.p.y + nd.oy;
         tz = nd.p.z + nd.oz;
-        k = nd.k;
-        c = 8;
+        k = nd.k * P.stiffness;
+        c = 8 * P.damping;
       } else {
         var home = nd.n.home;
         tx = home.x + Math.sin(time * 0.5 + nd.n.bob) * 5;
         ty = home.y + Math.cos(time * 0.4 + nd.n.bob) * 4;
         tz = home.z;
         k = 26;
-        c = 5.5;
+        c = 5.5 * P.damping;
       }
       var ax = k * (tx - nd.x) + Math.sin(time * 0.7 + nd.ph) * nd.d * 1.5;
       var ay = k * (ty - nd.y) + Math.cos(time * 0.6 + nd.ph) * nd.d * 1.2;
@@ -742,7 +911,7 @@
         if (d2 < 12100) {
           var d = Math.sqrt(d2) + 0.01;
           var f = 1 - d / 110;
-          f = f * f * pe * 2600;
+          f = f * f * pe * 2600 * P.push;
           ax += (dx / d) * f;
           ay += (dy / d) * f;
         }
@@ -772,7 +941,7 @@
       var a = cn.a.soma;
       var bx = cn.root ? cn.tx : cn.b.soma.x;
       var by = cn.root ? cn.ty : cn.b.soma.y;
-      var bz = cn.root ? 0 : cn.b.soma.z;
+      var bz = cn.root ? cn.a.home.z : cn.b.soma.z; // a root's foot sits at its cell's depth
       var mx = (a.x + bx) / 2 + cn.sag.x;
       var my = (a.y + by) / 2 + cn.sag.y;
       var mz = (a.z + bz) / 2 + cn.sag.z;
@@ -786,7 +955,7 @@
         if (cd2 < 12100) {
           var cd = Math.sqrt(cd2) + 0.01;
           var cf = 1 - cd / 110;
-          cf = cf * cf * pe * 2000;
+          cf = cf * cf * pe * 2000 * P.push;
           cax += (cdx / cd) * cf;
           cay += (cdy / cd) * cf;
         }
@@ -820,12 +989,22 @@
       o.ss = s;
       o.df = clamp((z3 + 170) / 340, 0, 1);
     }
+    var foot = {};
     for (i = 0; i < nodes.length; i++) project(nodes[i], nodes[i].x, nodes[i].y, nodes[i].z);
     for (i = 0; i < conns.length; i++) {
       var cc = conns[i];
       project(cc, cc.x, cc.y, cc.z);
-      cc.ex = cc.root ? cc.tx : cc.b.soma.sx;
-      cc.ey = cc.root ? cc.ty : cc.b.soma.sy;
+      if (cc.root) {
+        // The foot turns with its cell, so roots never sweep across other
+        // lines, but it stays tucked under the cortex's edge.
+        project(foot, cc.tx, cc.ty, cc.a.home.z);
+        var rim = domeY(foot.sx);
+        cc.ex = foot.sx;
+        cc.ey = rim == null ? foot.sy : Math.max(foot.sy, rim + 14);
+      } else {
+        cc.ex = cc.b.soma.sx;
+        cc.ey = cc.b.soma.sy;
+      }
       var lx = cc.ex - cc.a.soma.sx;
       var ly = cc.ey - cc.a.soma.sy;
       cc.len = Math.sqrt(lx * lx + ly * ly);
@@ -846,8 +1025,12 @@
         if (conn.root) {
           if (pu.dir === 1) {
             // Reached the surface: a small wave in the network's colour.
-            var loc = pick(conn.tx, conn.ty - offsetY());
-            if (loc) addRipple(loc, 0.44, pu.hue, 1, { speed: 0.42, life: 2.4 });
+            // In a storm, only some of these, so the release wave stays on screen.
+            var loc = storming() && time - lastRootRipple < 0.35 ? null : pick(conn.ex, conn.ey - offsetY());
+            if (loc) {
+              lastRootRipple = time;
+              addRipple(loc, 0.44, pu.hue, 1, { speed: 0.42, life: 2.4 });
+            }
           } else {
             fire(conn.a, pu.gen, conn);
           }
@@ -866,7 +1049,7 @@
       for (var j = 0; j < conns.length; j++) {
         var rc = conns[j];
         if (!rc.root || rp.hits[rc.id]) continue;
-        var rl = pick(rc.tx, rc.ty - offsetY());
+        var rl = pick(rc.ex, rc.ey - offsetY());
         if (!rl) continue;
         var dot = clamp(rl[0] * rp.dir[0] + rl[1] * rp.dir[1] + rl[2] * rp.dir[2], -1, 1);
         if (Math.acos(dot) <= radius) {
@@ -883,7 +1066,7 @@
     if (!nctx) return;
     nctx.setTransform(1, 0, 0, 1, 0, 0);
     nctx.clearRect(0, 0, ncanvas.width, ncanvas.height);
-    if (fade <= 0.01) return;
+    if (fade <= 0.01 || !P.neurons) return;
     nctx.setTransform(ndpr, 0, 0, ndpr, 0, -offsetY() * ndpr);
     nctx.globalCompositeOperation = "lighter";
     nctx.lineCap = "round";
@@ -897,7 +1080,7 @@
       var a = c.a.soma;
       var rgb = c.glow > 0.02 ? hueRGB(c.hue) : white;
       var amt = Math.min(1, c.glow * 1.4);
-      nctx.strokeStyle = tint(rgb, amt, (0.13 + 0.55 * c.glow) * fade);
+      nctx.strokeStyle = tint(rgb, amt, (P.axonOpacity + 0.55 * c.glow) * fade);
       nctx.lineWidth = 0.7 + c.glow * 0.9;
       nctx.beginPath();
       nctx.moveTo(a.sx, a.sy);
@@ -921,9 +1104,9 @@
       var n = neurons[i];
       var soma = n.soma;
       var g = n.glow;
-      var col = g > 0.02 ? hueRGB(NET_HUE[n.net]) : white;
+      var col = g > 0.02 ? hueRGB(netHue(n.net)) : white;
       var am = Math.min(1, g * 1.6);
-      var base = (0.26 + 0.5 * soma.df) * fade;
+      var base = (P.cellOpacity + 0.5 * soma.df) * fade;
       var ws = soma.ss * (0.8 + 0.4 * soma.df);
 
       // Dendrites, in three weights
@@ -1017,7 +1200,7 @@
   // A press: a wave over the surface, and a jolt to anything nearby.
   function excite(clientX, clientY, strength, silent) {
     var s = strength == null ? 1 : strength;
-    hueNow = (hueNow + 0.19 + Math.random() * 0.1) % 1;
+    hueNow = (hueNow + P.hueStep + Math.random() * P.hueStep * 0.5) % 1;
     var dir = pick(clientX, clientY);
     if (dir) addRipple(dir, s, hueNow, 0);
     nearNeurons(clientX, clientY, 130, 260 * s, 0);
@@ -1034,6 +1217,23 @@
       addRipple(dir, 0.7, (hold.hue + 0.4) % 1, 2, { speed: 0.5, life: 3.4 });
     }
     nearNeurons(clientX, clientY, 200 + 180 * charge, 500 + 700 * charge, 0);
+    // Then all of them: a front races out from the release point, and the
+    // whole network keeps firing for a few seconds.
+    var sy = clientY + offsetY();
+    neurons.forEach(function (n) {
+      var dx = n.soma.sx - clientX;
+      var dy = n.soma.sy - sy;
+      later.push({
+        at: time + Math.sqrt(dx * dx + dy * dy) / 1500,
+        run: function () {
+          n.ref = 0;
+          fire(n, 1, null);
+        }
+      });
+    });
+    storm.t0 = time;
+    storm.until = time + (0.9 + 2.8 * charge) * P.storm;
+    storm.rate = 2 + 9 * charge;
     yawVel += (clientX < sphere.x ? -1 : 1) * 0.5 * charge;
     if (audio) audio.release(clientX / Math.max(1, cssW), clientY / Math.max(1, cssH), charge);
     burst();
@@ -1063,13 +1263,14 @@
 
   function step(dt) {
     time += dt;
+    morphT += dt * P.morph;
 
     // Rotation: a slow turn, plus whatever the pointer adds.
     yawVel *= Math.exp(-1.6 * dt);
-    yaw += (0.032 + yawVel) * dt;
+    yaw += (P.spin + yawVel) * dt;
     var ease = 1 - Math.exp(-3 * dt);
-    yawOff += ((pointer.inside ? (pointer.nx - 0.5) * 0.55 : 0) - yawOff) * ease;
-    pitchOff += ((pointer.inside ? (pointer.ny - 0.5) * 0.34 : 0) - pitchOff) * ease;
+    yawOff += ((pointer.inside ? (pointer.nx - 0.5) * 0.55 * P.tilt : 0) - yawOff) * ease;
+    pitchOff += ((pointer.inside ? (pointer.ny - 0.5) * 0.34 * P.tilt : 0) - pitchOff) * ease;
     updateRot();
 
     // Pointer lamp
@@ -1091,7 +1292,7 @@
 
     // Hold
     if (hold.active) {
-      hold.charge = clamp((time - hold.t0 - 0.2) / 1.3, 0, 1);
+      hold.charge = clamp((time - hold.t0 - 0.2) / P.holdTime, 0, 1);
       hold.dir = pick(hold.x, hold.y);
       if (hold.charge > 0) {
         if (!hold.hue || hold.charge < 0.02) hold.hue = (hueNow + 0.5) % 1;
@@ -1113,7 +1314,7 @@
     }
     ripples = live;
 
-    stepNeurons(dt);
+    if (P.neurons) stepNeurons(dt);
   }
 
   function render() {
@@ -1126,14 +1327,14 @@
       waveData[i * 4] = w.kx;
       waveData[i * 4 + 1] = w.ky;
       waveData[i * 4 + 2] = w.kz;
-      waveData[i * 4 + 3] = (w.ph + w.sp * time) % TAU;
+      waveData[i * 4 + 3] = (w.ph + w.sp * morphT) % TAU;
     }
     for (i = 0; i < ND; i++) {
       var dw = waves[NW + i];
       detData[i * 4] = dw.kx;
       detData[i * 4 + 1] = dw.ky;
       detData[i * 4 + 2] = dw.kz;
-      detData[i * 4 + 3] = (dw.ph + dw.sp * time) % TAU;
+      detData[i * 4 + 3] = (dw.ph + dw.sp * morphT) % TAU;
     }
 
     // Newest ripples win the shader's slots.
@@ -1143,14 +1344,14 @@
       var o = i * 4;
       if (rp) {
         var age = time - rp.t0;
-        var fade = Math.exp(-age * 0.8) * Math.min(1, age * 12) * clamp((rp.life - age) / 0.6, 0, 1);
+        var fade = Math.exp(-age * P.waveDecay) * Math.min(1, age * 12) * clamp((rp.life - age) / 0.6, 0, 1);
         ripData[o] = rp.dir[0];
         ripData[o + 1] = rp.dir[1];
         ripData[o + 2] = rp.dir[2];
         ripData[o + 3] = age * rp.speed;
         ripDataB[o] = rp.strength * fade;
         ripDataB[o + 1] = rp.hue;
-        ripDataB[o + 2] = 0.045 + 0.04 * age;
+        ripDataB[o + 2] = P.waveWidth + 0.04 * age;
         ripDataB[o + 3] = 0;
       } else {
         ripData[o] = ripData[o + 1] = ripData[o + 2] = ripData[o + 3] = 0;
@@ -1176,9 +1377,16 @@
     gl.uniform1f(U.uTime, time % 1000);
     gl.uniform1f(U.uGain, gain * intro);
     gl.uniform1f(U.uWide, wide ? 1 : 0);
-    gl.uniform1f(U.uFoldW, foldW);
+    gl.uniform1f(U.uFoldW, (P.foldWidth * foldPxNow) / sphere.R);
     gl.uniform1f(U.uDetK, detK);
-    gl.uniform2f(U.uFade, bottom - (wide ? 110 : 70), bottom + (wide ? 60 : 30));
+    gl.uniform2f(U.uFade, bottom - P.fadeLength * (wide ? 1 : 0.64), bottom + (wide ? 60 : 30));
+    gl.uniform4f(U.uLook, P.depth, P.detail, P.sulcusShade, P.shine);
+    gl.uniform4f(U.uLook2, P.brightness, P.rim, P.lamp, P.colorAmount);
+    gl.uniform4f(U.uLook3, P.swell, P.foldKick, P.holdPress, Math.max(0.002, P.lampSize));
+    gl.uniform4f(U.uFrame, P.textShield, P.warmth, 0, 0);
+    var az = (P.lightAzimuth * Math.PI) / 180;
+    var el = (P.lightElevation * Math.PI) / 180;
+    gl.uniform3f(U.uLight, Math.cos(az) * Math.cos(el), Math.sin(az) * Math.cos(el), Math.sin(el));
     gl.drawArrays(gl.TRIANGLES, 0, 3);
 
     drawNeurons(gain * intro);
@@ -1251,7 +1459,8 @@
   // ---- Layout ------------------------------------------------------------
 
   function buildWaves() {
-    var foldPx = wide ? 56 : 40; // fold wavelength on screen
+    var foldPx = P.foldSize * (wide ? 1 : 0.72); // fold wavelength on screen
+    foldPxNow = foldPx;
     var K = (TAU * sphere.R) / foldPx;
     waves = [];
     function one(k) {
@@ -1263,9 +1472,8 @@
     }
     var i;
     for (i = 0; i < NW; i++) waves.push(one(K * rnd(0.8, 1.2)));
-    detK = K * 2.3;
+    detK = K * P.detailScale;
     for (i = 0; i < ND; i++) waves.push(one(detK * rnd(0.85, 1.15)));
-    foldW = (0.3 * foldPx) / sphere.R;
   }
 
   var builtFor = "";
@@ -1277,13 +1485,13 @@
     stageBox = { left: rect.left, top: rect.top + scrollY, width: rect.width, height: rect.height };
 
     if (wide) {
-      sphere.R = Math.max(rect.height * 0.98, rect.width * 0.92);
-      sphere.x = stageBox.left + rect.width * 0.6;
-      domeTop = stageBox.top + rect.height * 0.36;
+      sphere.R = Math.max(rect.height * 0.98, rect.width * 0.92) * P.size;
+      sphere.x = stageBox.left + rect.width * P.centerX;
+      domeTop = stageBox.top + rect.height * P.horizon;
     } else {
-      sphere.R = Math.max(rect.width * 1.05, 320);
+      sphere.R = Math.max(rect.width * 1.05, 320) * P.size;
       sphere.x = stageBox.left + rect.width * 0.5;
-      domeTop = stageBox.top + rect.height * 0.44;
+      domeTop = stageBox.top + rect.height * (P.horizon + 0.08);
     }
     sphere.y = domeTop + sphere.R;
 
@@ -1347,7 +1555,7 @@
       var dy = e.clientY - pointer.y;
       var dt = Math.max(8, now - pointer.lastMove);
       var speed = pointer.inside ? Math.sqrt(dx * dx + dy * dy) / dt : 0; // px per ms
-      if (pointer.inside) yawVel = clamp(yawVel + dx * 0.0007, -1.3, 1.3); // a sideways flick spins it
+      if (pointer.inside) yawVel = clamp(yawVel + dx * 0.0007 * P.flick, -1.3, 1.3); // a sideways flick spins it
       pointer.x = e.clientX;
       pointer.y = e.clientY;
       pointer.nx = e.clientX / Math.max(1, cssW);
@@ -1443,6 +1651,40 @@
     e.preventDefault();
     stop();
   });
+
+  // For the lab page: live parameters, and a way to apply the ones that
+  // need the scene rebuilt (fold size, framing, neuron layout).
+  window.cortex = {
+    params: P,
+    defaults: DEFAULTS,
+    // For checks from the console: the network as it is drawn right now.
+    network: function () {
+      return {
+        neurons: neurons.length,
+        storming: storming(),
+        firing: neurons.filter(function (n) {
+          return n.glow > 0.5;
+        }).length,
+        links: conns.map(function (c) {
+          return { root: c.root, a: [c.a.soma.sx, c.a.soma.sy], m: [c.sx, c.sy], b: [c.ex, c.ey], an: c.a.id, bn: c.b ? c.b.id : -1 };
+        })
+      };
+    },
+    rebuild: function () {
+      var keep = born;
+      builtFor = "";
+      layout();
+      born = keep; // no fade-in when tuning
+    },
+    reseed: function () {
+      yaw = Math.random() * TAU;
+      hueNow = Math.random();
+      builtFor = "";
+      layout();
+    },
+    excite: excite,
+    advance: excite.advance
+  };
 
   updateRot();
   resize();
