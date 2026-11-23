@@ -2273,14 +2273,21 @@ html.has-cortex body.is-home::after {
   display: none;
 }
 
+/* One stacked composition at every size: the copy, then the cortex rising
+   beneath it as a horizon. The scene scales with the window. */
 .hero--cortex {
-  min-height: clamp(31rem, 76vh, 47rem);
+  min-height: max(36rem, calc(100svh - 4.5rem));
+  grid-template-columns: minmax(0, 1fr);
+  grid-template-rows: auto minmax(0, 1fr);
+  gap: 0;
   align-items: stretch;
   cursor: crosshair;
 }
 
 .hero--cortex .hero-copy {
-  align-self: center;
+  max-width: 44rem;
+  align-self: start;
+  padding-top: clamp(0rem, 4vh, 3rem);
   cursor: auto;
 }
 
@@ -2288,13 +2295,89 @@ html.has-cortex body.is-home::after {
   color: #c2beb3;
 }
 
+/* Depth of field for the neuron layers drawn by cortex.js. */
+.cortex-canvas--far {
+  filter: blur(2.6px);
+  opacity: 0.5;
+}
+
+.cortex-canvas--near {
+  filter: blur(9px);
+  opacity: 0.75;
+}
+
+/* A soft, frosted pool of dark behind the copy: whatever drifts behind the
+   text goes out of focus instead of competing with it. */
+.hero--cortex .hero-copy::before {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  inset: -3rem -5rem -3rem -4rem;
+  background: radial-gradient(closest-side, rgba(7, 7, 6, 0.78), rgba(7, 7, 6, 0.55) 60%, rgba(7, 7, 6, 0));
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+  -webkit-mask-image: radial-gradient(closest-side, #000 55%, transparent);
+  mask-image: radial-gradient(closest-side, #000 55%, transparent);
+  pointer-events: none;
+}
+
+/* The name of a cell, shown while the pointer rests on it. */
+.cortex-tag {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 40;
+  display: grid;
+  max-width: 17rem;
+  gap: 0.15rem;
+  padding: 0.55rem 0.75rem 0.6rem;
+  border: 1px solid rgba(244, 240, 232, 0.1);
+  border-radius: 10px;
+  background: rgba(10, 10, 9, 0.62);
+  color: var(--text);
+  font-size: 0.78rem;
+  line-height: 1.35;
+  opacity: 0;
+  pointer-events: none;
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
+  transition: opacity 0.22s ease;
+}
+
+.cortex-tag.is-shown {
+  opacity: 1;
+}
+
+.cortex-tag-name {
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+.cortex-tag-what {
+  color: var(--text-muted);
+}
+
+.cortex-tag-net {
+  margin-top: 0.15rem;
+  font-family: var(--font-mono);
+  font-size: 0.66rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+@media (hover: none), (pointer: coarse) {
+  .cortex-tag {
+    display: none;
+  }
+}
+
 /* Empty on purpose: the brain assembles in this space. */
 .cortex-stage {
   position: relative;
   display: flex;
-  min-height: 22rem;
+  min-height: clamp(14rem, 34vh, 26rem);
   align-items: flex-end;
-  justify-content: flex-end;
+  justify-content: center;
 }
 
 .cortex-console {

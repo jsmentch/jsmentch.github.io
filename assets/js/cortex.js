@@ -3,10 +3,14 @@
  * neurons floating above it. Monochrome at rest; colour arrives with activity.
  *
  * Two layers
- * 1. Surface (WebGL, one fragment shader). A very large sphere whose curved
- *    horizon enters the hero. Folds come from a 3D random-wave field sampled
- *    on the sphere: its zero lines are sulci, the rest is shaded as rounded
- *    gyri with real lighting. The sphere turns on its own and with the pointer.
+ * 1. Surface (WebGL). A very large sphere whose curved horizon rises under
+ *    the copy. It is a sheet of thousands of cells, each wired to its
+ *    neighbours on the same gyrus; the folds (a 3D random-wave field whose
+ *    zero lines are sulci) show as dark channels between ridges of cells.
+ *    Waves are fronts of firing cells. The older shaded surface is still
+ *    there behind cells: false. The sphere turns on its own and with the
+ *    pointer, and everything is sized from the sphere, so any window gets
+ *    the same scene, scaled.
  * 2. Neurons (Canvas 2D). A few cell types built from soft spring chains, so
  *    they sway and flop when pushed. They are wired into three networks, and
  *    some send an axon down to the surface.
@@ -29,6 +33,25 @@
   if (!canvas) return;
   var ncanvas = document.querySelector("[data-neurons]");
   var nctx = ncanvas ? ncanvas.getContext("2d") : null;
+
+  // Neurons live in three depth layers, each on its own canvas so the browser
+  // can blur the far and near ones (depth of field) cheaply:
+  // 0 far: a soft, blurred field that may drift behind the text
+  // 1 mid: the sharp, interactive networks, kept clear of the text
+  // 2 near: a few large, out-of-focus cells at the edges
+  var layerCanvas = [null, ncanvas, null];
+  var layerCtx = [null, nctx, null];
+  var LAYER_RES = [0.5, 1, 0.5]; // blurred layers need far fewer pixels
+  if (ncanvas) {
+    ["far", "near"].forEach(function (name, k) {
+      var c = document.createElement("canvas");
+      c.className = "cortex-canvas cortex-canvas--neurons cortex-canvas--" + name;
+      c.setAttribute("aria-hidden", "true");
+      ncanvas.parentNode.insertBefore(c, k === 0 ? ncanvas : ncanvas.nextSibling);
+      layerCanvas[k === 0 ? 0 : 2] = c;
+      layerCtx[k === 0 ? 0 : 2] = c.getContext("2d");
+    });
+  }
   var stage = document.querySelector("[data-cortex-stage]");
   var audio = window.siteAudio;
 
@@ -39,7 +62,9 @@
 
   function bail() {
     canvas.parentNode && canvas.parentNode.removeChild(canvas);
-    if (ncanvas && ncanvas.parentNode) ncanvas.parentNode.removeChild(ncanvas);
+    document.querySelectorAll(".cortex-canvas--neurons").forEach(function (c) {
+      c.parentNode.removeChild(c);
+    });
   }
 
   var gl = null;
@@ -64,16 +89,22 @@
   // through window.CORTEX_PARAMS and edits them live via window.cortex.params.
   var DEFAULTS = {
     // Surface
-    foldSize: 95, // fold wavelength on screen, px (phones use 72% of this)
-    foldWidth: 0.12, // how round the gyri are
-    depth: 0.38, // how deep the folds read
+    cells: true, // the cortex as a sheet of networked cells (false: the shaded surface)
+    cellDensity: 1.7, // how many cells
+    cellSize: 1.6, // px
+    cellGlow: 2.2,
+    cellLinks: 0.9, // how bright the links between cells are
+    sparkle: 0.6, // cells firing on their own
+    foldSize: 95, // fold wavelength, px at an ~800px-wide window; scales with the sphere
+    foldWidth: 0.26, // how round the gyri are
+    depth: 0.7, // how deep the folds read
     detail: 0.085, // fine undulation on the crowns
     detailScale: 2.2,
     morph: 0, // how fast the folds drift
     // Light
     brightness: 1.1,
-    sulcusShade: 0.06, // light left in the bottom of a sulcus
-    shine: 0.28,
+    sulcusShade: 0.1, // light left in the bottom of a sulcus
+    shine: 0.34,
     rim: 0.2,
     warmth: 0, // -1 cool to 1 warm
     lightAzimuth: 58, // degrees, 0 = from the right, 90 = from above
@@ -81,7 +112,7 @@
     // Framing
     size: 0.68,
     horizon: 0.23, // where the top of the surface sits in the hero, 0 = top
-    centerX: 0.32,
+    centerX: 0.5,
     textShield: 0.2, // how far the surface dims behind the copy (1 = not at all)
     fadeLength: 110,
     // Motion
@@ -104,6 +135,11 @@
     storm: 1, // how long the whole network keeps firing after a charged release
     // Neurons
     neurons: true,
+    farField: 1, // the blurred cells deep behind
+    nearField: 1, // the big out-of-focus cells in front
+    ambient: 1, // how often the far field fires on its own
+    inhibition: 1, // how long an inhibitory spike holds its target quiet (0: off)
+    captions: true, // name a cell when the pointer rests on it
     neuronCount: 2.5,
     cellScale: 0.85,
     stiffness: 0.2,
@@ -158,6 +194,7 @@
     "uniform vec4 uLook3;", // swell, fold kick, hold press, lamp size
     "uniform vec4 uFrame;", // text shield, warmth
     "uniform vec3 uLight;",
+    "uniform float uMode;", // 1: cells are drawn on top, so the body stays dark
     "",
     "vec3 hue(float h) {",
     "  h = fract(h) * 5.0;",
@@ -191,7 +228,13 @@
     "  vec3 L = uLight;",
     "  vec3 col = bg;",
     "",
-    "  if (r < 1.0) {",
+    "  if (r < 1.0 && uMode > 0.5) {",
+    // A dark body: it hides the cells on the far side, with a faint lit edge.
+    "    vec3 n0 = vec3(d, sqrt(1.0 - r * r));",
+    "    float lit = smoothstep(-0.2, 1.0, dot(n0, L));",
+    "    float edge = pow(1.0 - n0.z, 4.0);",
+    "    col = bg * 0.72 + vec3(0.03, 0.03, 0.028) * lit * mask + vec3(0.09) * edge * lit * mask * uLook2.y * 3.0;",
+    "  } else if (r < 1.0) {",
     "    vec3 n0 = vec3(d, sqrt(1.0 - r * r));",
     "    vec3 q = uRot * n0;",
     "",
@@ -330,10 +373,193 @@
   [
     "uRes", "uScale", "uSphere", "uRot", "uWave", "uDet", "uRip", "uRipB", "uHover", "uHold",
     "uHoldHue", "uTime", "uGain", "uWide", "uFoldW", "uDetK", "uFade",
-    "uLook", "uLook2", "uLook3", "uFrame", "uLight"
+    "uLook", "uLook2", "uLook3", "uFrame", "uLight", "uMode"
   ].forEach(function (name) {
     U[name] = gl.getUniformLocation(prog, name);
   });
+
+  // ---- Cell surface --------------------------------------------------------
+  // The cortex as a sheet of cells. Each cell is a point on the sphere wired
+  // to its neighbours on the same gyrus, so the folds show up as the gaps
+  // between ridges of cells. Waves are fronts of firing cells. Everything is
+  // worked out per vertex on the GPU from the same uniforms as the surface.
+
+  var CELL_VERT = [
+    "precision highp float;",
+    "#define NW " + NW,
+    "#define NR " + NR,
+    "attribute vec3 aP;", // position on the unit sphere, surface frame
+    "attribute vec2 aS;", // random seed, size jitter
+    "uniform vec2 uRes;",
+    "uniform float uScale;",
+    "uniform vec3 uSphere;",
+    "uniform mat3 uRot;",
+    "uniform vec4 uWave[NW];",
+    "uniform vec4 uRip[NR];",
+    "uniform vec4 uRipB[NR];",
+    "uniform vec4 uHover;",
+    "uniform vec4 uHold;",
+    "uniform float uHoldHue;",
+    "uniform float uTime;",
+    "uniform float uGain;",
+    "uniform float uFoldW;",
+    "uniform vec2 uFade;",
+    "uniform vec4 uLook;", // depth, detail, sulcus shade, shine
+    "uniform vec4 uLook2;", // brightness, rim, lamp, colour amount
+    "uniform vec4 uLook3;", // swell, fold kick, hold press, lamp size
+    "uniform vec4 uFrame;", // text shield, warmth
+    "uniform vec3 uLight;",
+    "uniform vec4 uCell;", // size px, glow, link brightness, sparkle
+    "uniform float uKind;", // 0 cells, 1 links
+    "varying vec4 vCol;",
+    "",
+    "vec3 hue(float h) {",
+    "  h = fract(h) * 5.0;",
+    "  vec3 c0 = vec3(0.30, 0.80, 1.00);",
+    "  vec3 c1 = vec3(0.42, 0.95, 0.72);",
+    "  vec3 c2 = vec3(1.00, 0.74, 0.38);",
+    "  vec3 c3 = vec3(1.00, 0.42, 0.50);",
+    "  vec3 c4 = vec3(0.64, 0.52, 1.00);",
+    "  vec3 c = mix(c0, c1, clamp(h, 0.0, 1.0));",
+    "  c = mix(c, c2, clamp(h - 1.0, 0.0, 1.0));",
+    "  c = mix(c, c3, clamp(h - 2.0, 0.0, 1.0));",
+    "  c = mix(c, c4, clamp(h - 3.0, 0.0, 1.0));",
+    "  c = mix(c, c0, clamp(h - 4.0, 0.0, 1.0));",
+    "  return c;",
+    "}",
+    "",
+    "void main() {",
+    "  vec3 q = aP;",
+    "  float act = 0.0;",
+    "  vec3 actCol = vec3(0.0);",
+    "  float kick = 0.0;",
+    "  float swell = 0.0;",
+    "  for (int i = 0; i < NR; i++) {",
+    "    vec4 rp = uRip[i];",
+    "    vec4 rb = uRipB[i];",
+    "    if (rb.x > 0.0) {",
+    "      float ang = acos(clamp(dot(q, rp.xyz), -1.0, 1.0));",
+    "      float x = (ang - rp.w) / rb.z;",
+    "      float ring = exp(-x * x) * rb.x;",
+    // A thin bright front with a short tail behind it: cells fire, then recover.
+    "      float tail = exp(-max(rp.w - ang, 0.0) / (rb.z * 3.0)) * step(ang, rp.w) * rb.x * 0.35;",
+    "      act += ring + tail;",
+    "      actCol += (ring + tail) * hue(rb.y);",
+    "      kick += ring;",
+    "      swell += ring;",
+    "    }",
+    "  }",
+    "  float hang = acos(clamp(dot(q, uHold.xyz), -1.0, 1.0));",
+    "  float hr = 0.05 + 0.2 * uHold.w;",
+    "  float blob = uHold.w * exp(-(hang * hang) / (hr * hr));",
+    "  blob *= 0.8 + 0.2 * sin(uTime * 24.0 - hang * 46.0);",
+    "  act += blob * 1.1;",
+    "  actCol += blob * 1.1 * mix(hue(uHoldHue), vec3(1.0, 0.95, 0.9), uHold.w * 0.55);",
+    "  kick += blob * 1.6;",
+    "  float vang = acos(clamp(dot(q, uHover.xyz), -1.0, 1.0));",
+    "  float spot = uHover.w * exp(-(vang * vang) / uLook3.w);",
+    "  kick += spot * 0.6;",
+    "",
+    // The fold field, as on the shaded surface: crowns of gyri are bright, sulci dark.
+    "  vec3 qw = q + 0.014 * sin(q.yzx * 7.0 + uTime * 0.07);",
+    "  float h = 0.0;",
+    "  vec3 g = vec3(0.0);",
+    "  for (int i = 0; i < NW; i++) {",
+    "    vec4 w = uWave[i];",
+    "    float ph = dot(w.xyz, qw) + w.w + kick * uLook3.y * (0.9 + 0.3 * float(i));",
+    "    h += cos(ph);",
+    "    g -= w.xyz * sin(ph);",
+    "  }",
+    "  vec3 gt = g - q * dot(g, q);",
+    "  float gl = max(length(gt), 1e-3);",
+    "  float x = clamp(abs(h) / gl / uFoldW, 0.0, 1.0);",
+    "  float prof = sqrt(max(1.0 - (1.0 - x) * (1.0 - x), 0.0));",
+    "  float slope = (1.0 - x) / max(prof, 0.3);",
+    "  vec3 up = (h < 0.0 ? -1.0 : 1.0) * gt / gl;",
+    "  vec3 n = normalize(q - uLook.x * slope * up);",
+    "",
+    // Sulci sink a little, waves lift the sheet, a hold presses it in.
+    "  float rr = 1.0 - (1.0 - prof) * 0.012 * uLook.x + swell * 0.006 * uLook3.x - blob * 0.03 * uLook3.z;",
+    "  vec3 v = (q * rr) * uRot;", // view space, y up
+    "  vec2 scr = vec2(uSphere.x + uSphere.z * v.x, uSphere.y - uSphere.z * v.y);",
+    "  gl_Position = vec4(scr.x / uRes.x * 2.0 - 1.0, 1.0 - scr.y / uRes.y * 2.0, 0.0, 1.0);",
+    "",
+    "  vec3 nv = n * uRot;",
+    "  vec3 L = uLight;",
+    "  float diff = smoothstep(-0.3, 1.0, dot(nv, L));",
+    "  float term = smoothstep(-0.25, 0.7, dot(normalize(v), L));",
+    "  float crown = smoothstep(0.1, 0.9, x);",
+    "  float face = smoothstep(0.0, 0.25, v.z);", // the far side is hidden, the limb softens
+    "  float mask = (1.0 - smoothstep(uFade.x, uFade.y, scr.y)) * uGain * face;",
+    "",
+    "  float base = (0.08 + 0.92 * diff * diff) * mix(uLook.z, 1.0, crown) * term;",
+    "  float spark = pow(fract(aS.x * 13.7 + uTime * (0.03 + 0.09 * aS.y)), 90.0) * uCell.w;",
+    "  vec3 tint = vec3(1.0 + 0.1 * uFrame.y, 1.0 + 0.02 * uFrame.y, 1.0 - 0.14 * uFrame.y);",
+    "  vec3 bone = vec3(0.93, 0.91, 0.86) * tint;",
+    "  float a = clamp(act, 0.0, 1.6);",
+    "  vec3 pc = actCol / max(act, 1e-3);",
+    "  float amt = smoothstep(0.02, 0.55, a) * uLook2.w;",
+    "  vec3 rest = bone * base * uLook2.x;",
+    "  vec3 lit = pc * (0.35 + 0.9 * diff) * amt + pc * a * 0.7 * uLook2.w + bone * max(a - 1.0, 0.0) * 0.6;",
+    "  vec3 extra = bone * spark * (0.4 + 0.6 * crown) + bone * spot * uLook2.z * 1.4;",
+    "",
+    "  if (uKind < 0.5) {",
+    "    gl_PointSize = (uCell.x * (0.75 + 0.5 * aS.y) * (0.5 + 0.5 * crown) * (1.0 + 1.1 * a + 0.8 * spark)) * uScale;",
+    "    vCol = vec4((rest * (1.0 - amt) + lit + extra) * uCell.y, mask);",
+    "  } else {",
+    // Links stay faint at rest and light up as activity passes along them.
+    "    vCol = vec4(rest * uCell.z * 0.45 * crown + (lit + extra * 0.5) * (0.4 + 0.6 * crown), mask);",
+    "  }",
+    "}"
+  ].join("\n");
+
+  var CELL_FRAG = [
+    "precision mediump float;",
+    "uniform highp float uKind;", // must match the vertex shader's precision
+    "varying vec4 vCol;",
+    "void main() {",
+    "  float k = 1.0;",
+    "  if (uKind < 0.5) {",
+    "    float d = length(gl_PointCoord - 0.5);",
+    "    k = smoothstep(0.5, 0.12, d);",
+    "  }",
+    "  gl_FragColor = vec4(vCol.rgb * vCol.a * k, 1.0);",
+    "}"
+  ].join("\n");
+
+  var cprog = null;
+  var CU = {};
+  var cellBuf = null;
+  var linkBuf = null;
+  var cellCount = 0;
+  var linkCount = 0;
+  var aP = -1;
+  var aS = -1;
+  (function () {
+    var v = compile(gl.VERTEX_SHADER, CELL_VERT);
+    var f = compile(gl.FRAGMENT_SHADER, CELL_FRAG);
+    if (!v || !f) return;
+    var pr = gl.createProgram();
+    gl.attachShader(pr, v);
+    gl.attachShader(pr, f);
+    gl.linkProgram(pr);
+    if (!gl.getProgramParameter(pr, gl.LINK_STATUS)) {
+      if (window.console) console.warn("cortex cells:", gl.getProgramInfoLog(pr));
+      return;
+    }
+    cprog = pr;
+    aP = gl.getAttribLocation(pr, "aP");
+    aS = gl.getAttribLocation(pr, "aS");
+    [
+      "uRes", "uScale", "uSphere", "uRot", "uWave", "uRip", "uRipB", "uHover", "uHold", "uHoldHue",
+      "uTime", "uGain", "uFoldW", "uFade", "uLook", "uLook2", "uLook3", "uFrame", "uLight", "uCell", "uKind"
+    ].forEach(function (name) {
+      CU[name] = gl.getUniformLocation(pr, name);
+    });
+    cellBuf = gl.createBuffer();
+    linkBuf = gl.createBuffer();
+  })();
+  gl.useProgram(prog);
 
   // ---- Shared state ------------------------------------------------------
 
@@ -516,8 +742,24 @@
 
   var UP = -Math.PI / 2;
 
+  // Basket, bipolar and Purkinje cells are inhibitory: their spikes quiet the
+  // cells they reach instead of exciting them. (Bipolar cells mostly inhibit
+  // other inhibitory cells, which opens a gate: disinhibition.)
+  var INHIBITORY = { basket: true, bipolar: true, purkinje: true };
+  var INHIB_RGB = [168, 180, 214];
+
+  // What each kind of cell is, for the hover caption.
+  var ABOUT = {
+    pyramidal: ["Pyramidal cell", "Excitatory. The cortex's main output neuron."],
+    stellate: ["Spiny stellate cell", "Excitatory. First to receive sensory input from the thalamus."],
+    basket: ["Basket cell", "Inhibitory. Wraps the cell bodies of its targets to hold activity in check."],
+    bipolar: ["Bipolar interneuron", "Inhibitory. Quiets other inhibitory cells, opening a gate."],
+    purkinje: ["Purkinje cell", "Inhibitory. The cerebellum's only output, with a vast, flat dendritic fan."]
+  };
+  var NET_NAMES = ["Auditory network", "Visual network", "Oculomotor network"];
+
   function makeNeuron(type, x, y, z, sc) {
-    var n = { id: neurons.length, type: type, home: { x: x, y: y, z: z }, nodes: [], conns: [], root: null, glow: 0, ref: 0, net: 0, r: 5 * sc, tilt: rnd(-0.22, 0.22), bob: Math.random() * TAU, sc: sc };
+    var n = { id: neurons.length, type: type, layer: 1, inhib: INHIBITORY[type] || false, hush: 0, home: { x: x, y: y, z: z }, nodes: [], conns: [], root: null, glow: 0, ref: 0, net: 0, r: 5 * sc, tilt: rnd(-0.22, 0.22), bob: Math.random() * TAU, sc: sc };
     var soma = addNode(n, null, 0, 0, 0, 1.7);
     n.soma = soma;
     var i;
@@ -633,9 +875,9 @@
   var depthPhase = 0;
   function depthAt(x, y) {
     var b = stageBox;
-    var u = (x - b.left) / Math.max(1, b.width);
+    var u = x / Math.max(1, cssW);
     var v = (y - b.top) / Math.max(1, b.height);
-    var amp = Math.min(130, b.width * 0.11);
+    var amp = Math.min(130 * clamp(unit, 0.8, 1.6), cssW * 0.11);
     return amp * Math.sin(u * 4.6 + depthPhase) * (0.75 + 0.25 * Math.cos(v * 3 + depthPhase * 1.7));
   }
 
@@ -666,6 +908,7 @@
     var pad = 30 * lastScale * (room || 1);
     for (var i = 0; i < conns.length; i++) {
       var c = conns[i];
+      if (c.a.layer !== a.layer) continue; // other depths can overlap
       var c1 = c.a.home;
       var c2 = c.root ? { x: c.tx, y: c.ty } : c.b.home;
       if (c.a === a || c.a === b || c.b === a || c.b === b) continue;
@@ -675,12 +918,13 @@
     }
     for (var j = 0; j < neurons.length; j++) {
       var n = neurons[j];
-      if (n === a || n === b) continue;
+      if (n === a || n === b || n.layer !== a.layer) continue;
       if (segDist(p, q, n.home) < pad) return false;
     }
     return true;
   }
   var lastScale = 1;
+  var lineK = 1; // stroke weight, follows cell size
 
   function tryLink(a, b) {
     if (!clearPath(a, a.home, b.home, b)) return false;
@@ -688,63 +932,19 @@
     return true;
   }
 
-  function buildNeurons() {
-    neurons = [];
-    nodes = [];
-    conns = [];
-    pulses = [];
-    later = [];
-
-    var b = stageBox;
-    var count = Math.round((wide ? clamp(Math.round((b.width * b.height) / 25000), 10, 17) : 7) * P.neuronCount);
-    var sc = (wide ? clamp(b.width / 540, 0.85, 1.15) : 0.7) * P.cellScale;
-    lastScale = sc;
-    depthPhase = Math.random() * TAU;
-    var x0 = b.left + b.width * 0.04;
-    var x1 = b.left + b.width * 0.96;
-    var y0 = b.top + b.height * (wide ? 0.06 : 0.04);
-    var y1 = domeTop + b.height * (wide ? 0.15 : 0.1);
-    var order = ["pyramidal", "stellate", "purkinje", "basket", "pyramidal", "bipolar", "stellate", "pyramidal", "basket", "stellate", "bipolar", "pyramidal", "purkinje", "stellate", "basket", "pyramidal", "bipolar"];
-
-    // Spread them out: of a few random candidates, keep the loneliest.
-    var spots = [];
-    for (var i = 0; i < count; i++) {
-      var best = null;
-      var bestD = -1;
-      for (var t = 0; t < 14; t++) {
-        var cx = rnd(x0, x1);
-        var cy = rnd(y0, y1);
-        var dmin = 1e9;
-        for (var j = 0; j < spots.length; j++) {
-          var ddx = cx - spots[j].x;
-          var ddy = (cy - spots[j].y) * 1.25;
-          dmin = Math.min(dmin, ddx * ddx + ddy * ddy);
-        }
-        if (dmin > bestD) {
-          bestD = dmin;
-          best = { x: cx, y: cy };
-        }
-      }
-      spots.push(best);
-    }
-    spots.forEach(function (s, k) {
-      makeNeuron(order[k % order.length], s.x, s.y, depthAt(s.x, s.y) + rnd(-12, 12), sc);
-    });
-
-    // Three networks, split left to right.
-    var byX = neurons.slice().sort(function (p, q) {
+  // Split a group of cells into three networks left to right and wire each
+  // to its nearest neighbours. Shortest links go first and a link is skipped
+  // if it would cross another line, so every network stays a clean web.
+  function wire(group) {
+    var byX = group.slice().sort(function (p, q) {
       return p.home.x - q.home.x;
     });
     byX.forEach(function (n, k) {
       n.net = Math.min(2, Math.floor((k / byX.length) * 3));
     });
-
-    // Within a network, wire each neuron to its nearest neighbours. Shortest
-    // links go first and a link is skipped if it would cross another line,
-    // so every network stays a clean, uncrossed web.
     var wants = [];
-    neurons.forEach(function (n) {
-      var same = neurons
+    group.forEach(function (n) {
+      var same = group
         .filter(function (m) {
           return m !== n && m.net === n.net;
         })
@@ -771,9 +971,9 @@
     // One bridge between neighbouring networks: the shortest one that crosses nothing.
     [[0, 1], [1, 2]].forEach(function (pair) {
       var pairs = [];
-      neurons.forEach(function (p) {
+      group.forEach(function (p) {
         if (p.net !== pair[0]) return;
-        neurons.forEach(function (q) {
+        group.forEach(function (q) {
           if (q.net === pair[1]) pairs.push([p, q, dist2(p, q)]);
         });
       });
@@ -782,7 +982,63 @@
       });
       for (var k = 0; k < pairs.length; k++) if (tryLink(pairs[k][0], pairs[k][1])) break;
     });
+  }
 
+  function buildNeurons() {
+    neurons = [];
+    nodes = [];
+    conns = [];
+    pulses = [];
+    later = [];
+
+    var b = stageBox;
+    var count = Math.round(7 * P.neuronCount * clamp(cssW / 800, 0.7, 1.3));
+    var sc = 0.7 * P.cellScale * Math.pow(clamp(unit, 0.85, 2.2), 0.8);
+    lastScale = sc;
+    lineK = Math.sqrt(sc / 0.6);
+    depthPhase = Math.random() * TAU;
+    var x0 = cssW * 0.05;
+    var x1 = cssW * 0.95;
+    var y0 = copyBox ? Math.min(b.top, copyBox.top + 10) : b.top;
+    var y1 = domeTop + b.height * 0.1;
+    var pad = 28 * sc;
+    function free(x, y) {
+      if (!copyBox) return true;
+      if (y > copyBox.bottom + pad) return true; // below the copy
+      // Beside it only when there is real room (wide windows).
+      return cssW - copyBox.right > cssW * 0.28 && x > copyBox.right + pad * 2;
+    }
+    // Roughly the cortex's mix: most cells excitatory, about a quarter inhibitory.
+    var order = ["pyramidal", "stellate", "pyramidal", "basket", "pyramidal", "stellate", "pyramidal", "bipolar", "stellate", "pyramidal", "purkinje", "pyramidal", "stellate", "basket", "pyramidal", "stellate"];
+
+    // Spread them out: of a few random candidates, keep the loneliest.
+    var spots = [];
+    for (var i = 0; i < count; i++) {
+      var best = null;
+      var bestD = -1;
+      for (var t = 0, tried = 0; t < 14 && tried < 80; tried++) {
+        var cx = rnd(x0, x1);
+        var cy = rnd(y0, y1);
+        if (!free(cx, cy)) continue; // keep clear of the text
+        t++;
+        var dmin = 1e9;
+        for (var j = 0; j < spots.length; j++) {
+          var ddx = cx - spots[j].x;
+          var ddy = (cy - spots[j].y) * 1.25;
+          dmin = Math.min(dmin, ddx * ddx + ddy * ddy);
+        }
+        if (dmin > bestD) {
+          bestD = dmin;
+          best = { x: cx, y: cy };
+        }
+      }
+      if (best) spots.push(best);
+    }
+    spots.forEach(function (s, k) {
+      makeNeuron(order[k % order.length], s.x, s.y, depthAt(s.x, s.y) + rnd(-12, 12), sc);
+    });
+
+    wire(neurons.slice());
     // The lowest ones send an axon down into the surface.
     var byY = neurons.slice().sort(function (p, q) {
       return q.home.y - p.home.y;
@@ -806,13 +1062,71 @@
     });
     cluster.x = sx / Math.max(1, neurons.length);
     cluster.y = sy / Math.max(1, neurons.length);
+
+    // Placing a cell at depth z so that, at rest, it lands on screen at (x, y).
+    function placeAt(type, x, y, z, layer) {
+      var k = (FOCAL - z) / FOCAL;
+      var n = makeNeuron(type, cluster.x + (x - cluster.x) * k, cluster.y + (y - cluster.y) * k, z, sc);
+      n.layer = layer;
+      return n;
+    }
+
+    // Far: a deeper, blurred field across the whole hero, behind the text too.
+    var farCount = Math.round(count * 0.85 * P.farField);
+    var farTop = copyBox ? copyBox.top - 30 : b.top;
+    var far = [];
+    var farSpots = [];
+    for (i = 0; i < farCount; i++) {
+      var fb = null;
+      var fd = -1;
+      for (var ft = 0; ft < 12; ft++) {
+        var fx = rnd(cssW * 0.02, cssW * 0.98);
+        var fy = rnd(farTop, y1 + b.height * 0.05);
+        var fm = 1e9;
+        for (var fj = 0; fj < farSpots.length; fj++) {
+          var fdx = fx - farSpots[fj].x;
+          var fdy = (fy - farSpots[fj].y) * 1.25;
+          fm = Math.min(fm, fdx * fdx + fdy * fdy);
+        }
+        if (fm > fd) {
+          fd = fm;
+          fb = { x: fx, y: fy };
+        }
+      }
+      farSpots.push(fb);
+      far.push(placeAt(order[(i + 3) % order.length], fb.x, fb.y, -380 + depthAt(fb.x, fb.y) * 0.35, 0));
+    }
+    wire(far);
+
+    // Near: a few big, out-of-focus cells at the edges, never over the text.
+    var nearCount = wide ? Math.round(3 * P.nearField) : 0;
+    var nearSpots = [
+      [cssW * rnd(0.9, 0.97), y0 + (y1 - y0) * rnd(0.1, 0.35)],
+      [cssW * rnd(0.03, 0.1), y1 - (y1 - y0) * rnd(0.0, 0.12)],
+      [cssW * rnd(0.86, 0.95), y1 - (y1 - y0) * rnd(0.0, 0.15)]
+    ];
+    for (i = 0; i < nearCount && i < nearSpots.length; i++) {
+      placeAt(["pyramidal", "stellate", "purkinje"][i], nearSpots[i][0], nearSpots[i][1], 300, 2);
+    }
   }
 
   function sendPulse(c, from, gen, hue, upward) {
     var dir = upward ? -1 : c.a === from ? 1 : -1;
-    pulses.push({ c: c, dir: dir, t: 0, dur: clamp(c.len / P.pulseSpeed, 0.06, 2), gen: gen, hue: hue });
+    var inhib = !!(from && from.inhib);
+    pulses.push({ c: c, dir: dir, t: 0, dur: clamp(c.len / P.pulseSpeed, 0.06, 2), gen: gen, hue: hue, inhib: inhib });
     c.glow = 1;
     c.hue = hue;
+    c.inhib = inhib;
+  }
+
+  // An inhibitory spike arriving: the target is held quiet for a moment.
+  // In a storm everything fires regardless.
+  function inhibit(n, from) {
+    if (storming() || !P.inhibition) return;
+    if (from && from.type === "bipolar" && !n.inhib) return; // bipolar cells target other interneurons
+    n.ref = Math.max(n.ref, time + 0.9 * P.inhibition);
+    n.hush = 1;
+    n.glow *= 0.3;
   }
 
   function fire(n, gen, from) {
@@ -827,7 +1141,7 @@
       nd.vz += nd.oz * 3.2;
     }
     // In a storm, thin the clicks out so it stays a texture, not a wall.
-    if (audio && (!storming() || time - lastSpikeAt > 0.035)) {
+    if (audio && n.layer !== 0 && (!storming() || time - lastSpikeAt > 0.035)) {
       lastSpikeAt = time;
       audio.spike(n.soma.sx / Math.max(1, cssW));
     }
@@ -866,15 +1180,22 @@
     // The storm: every cell keeps firing on its own, fading out over its length.
     var sk = storming() ? (storm.until - time) / Math.max(0.01, storm.until - storm.t0) : 0;
 
+    // The far field is never quite still: now and then a cell there fires.
+    if (Math.random() < dt * 0.7 * P.ambient) {
+      var pickFar = neurons[Math.floor(Math.random() * neurons.length)];
+      if (pickFar && pickFar.layer === 0) fire(pickFar, 4, null);
+    }
+
     for (i = 0; i < neurons.length; i++) {
       var n = neurons[i];
       n.glow *= Math.exp(-2.4 * dt);
+      n.hush *= Math.exp(-2.2 * dt);
       if (sk > 0 && Math.random() < storm.rate * sk * dt) fire(n, 2, null);
       // Brushing a cell body is enough to set it off.
       if (pe > 0.36) {
         var ddx = n.soma.sx - px;
         var ddy = n.soma.sy - py;
-        var reach = n.r * n.soma.ss + 13;
+        var reach = n.r * n.soma.ss + 18 * lineK;
         if (ddx * ddx + ddy * ddy < reach * reach) fire(n, 3, null);
       }
     }
@@ -1035,7 +1356,9 @@
             fire(conn.a, pu.gen, conn);
           }
         } else {
-          fire(pu.dir === 1 ? conn.b : conn.a, pu.gen, conn);
+          var target = pu.dir === 1 ? conn.b : conn.a;
+          if (pu.inhib) inhibit(target, pu.dir === 1 ? conn.a : conn.b);
+          else fire(target, pu.gen, conn);
         }
       }
       pulses = alive;
@@ -1063,11 +1386,19 @@
   var ndpr = 1;
 
   function drawNeurons(fade) {
-    if (!nctx) return;
-    nctx.setTransform(1, 0, 0, 1, 0, 0);
-    nctx.clearRect(0, 0, ncanvas.width, ncanvas.height);
-    if (fade <= 0.01 || !P.neurons) return;
-    nctx.setTransform(ndpr, 0, 0, ndpr, 0, -offsetY() * ndpr);
+    for (var L = 0; L < 3; L++) {
+      var lc = layerCtx[L];
+      if (!lc) continue;
+      lc.setTransform(1, 0, 0, 1, 0, 0);
+      lc.clearRect(0, 0, layerCanvas[L].width, layerCanvas[L].height);
+      if (fade <= 0.01 || !P.neurons) continue;
+      var k = ndpr * LAYER_RES[L];
+      lc.setTransform(k, 0, 0, k, 0, -offsetY() * k);
+      drawLayer(lc, L, fade);
+    }
+  }
+
+  function drawLayer(nctx, layer, fade) {
     nctx.globalCompositeOperation = "lighter";
     nctx.lineCap = "round";
     nctx.lineJoin = "round";
@@ -1077,11 +1408,12 @@
     // Axons
     for (i = 0; i < conns.length; i++) {
       var c = conns[i];
+      if (c.a.layer !== layer) continue;
       var a = c.a.soma;
-      var rgb = c.glow > 0.02 ? hueRGB(c.hue) : white;
+      var rgb = c.glow > 0.02 ? (c.inhib ? INHIB_RGB : hueRGB(c.hue)) : white;
       var amt = Math.min(1, c.glow * 1.4);
       nctx.strokeStyle = tint(rgb, amt, (P.axonOpacity + 0.55 * c.glow) * fade);
-      nctx.lineWidth = 0.7 + c.glow * 0.9;
+      nctx.lineWidth = (0.7 + c.glow * 0.9) * lineK;
       nctx.beginPath();
       nctx.moveTo(a.sx, a.sy);
       nctx.quadraticCurveTo(c.sx, c.sy, c.ex, c.ey);
@@ -1102,12 +1434,13 @@
     // Cells
     for (i = 0; i < neurons.length; i++) {
       var n = neurons[i];
+      if (n.layer !== layer) continue;
       var soma = n.soma;
       var g = n.glow;
       var col = g > 0.02 ? hueRGB(netHue(n.net)) : white;
       var am = Math.min(1, g * 1.6);
       var base = (P.cellOpacity + 0.5 * soma.df) * fade;
-      var ws = soma.ss * (0.8 + 0.4 * soma.df);
+      var ws = soma.ss * (0.8 + 0.4 * soma.df) * lineK;
 
       // Dendrites, in three weights
       for (var pass = 0; pass < 3; pass++) {
@@ -1141,6 +1474,15 @@
       }
       nctx.fill();
 
+      // Held quiet by inhibition: a cool ring that fades.
+      if (n.hush > 0.05) {
+        nctx.strokeStyle = tint(INHIB_RGB, 1, n.hush * 0.55 * fade);
+        nctx.lineWidth = 1.2 * lineK;
+        nctx.beginPath();
+        nctx.arc(soma.sx, soma.sy, r * (1.8 + (1 - n.hush) * 1.4), 0, TAU);
+        nctx.stroke();
+      }
+
       if (g > 0.04) {
         nctx.fillStyle = tint(col, 1, g * 0.2 * fade);
         nctx.beginPath();
@@ -1157,11 +1499,12 @@
     for (i = 0; i < pulses.length; i++) {
       var pu = pulses[i];
       var pc = pu.c;
+      if (pc.a.layer !== layer) continue;
       var t = pu.dir === 1 ? pu.t : 1 - pu.t;
       var v = 1 - t;
       var x = v * v * pc.a.soma.sx + 2 * v * t * pc.sx + t * t * pc.ex;
       var y = v * v * pc.a.soma.sy + 2 * v * t * pc.sy + t * t * pc.ey;
-      var prgb = hueRGB(pu.hue);
+      var prgb = pu.inhib ? INHIB_RGB : hueRGB(pu.hue);
       nctx.fillStyle = tint(prgb, 1, 0.22 * fade);
       nctx.beginPath();
       nctx.arc(x, y, 6.5, 0, TAU);
@@ -1173,7 +1516,69 @@
     }
   }
 
+  // ---- Captions ---------------------------------------------------------
+  // Rest the pointer on a cell in the sharp layer and it is named, quietly.
+
+  var tag = document.createElement("div");
+  tag.className = "cortex-tag";
+  tag.setAttribute("aria-hidden", "true");
+  tag.innerHTML = '<b class="cortex-tag-name"></b><span class="cortex-tag-what"></span><span class="cortex-tag-net"></span>';
+  document.body.appendChild(tag);
+  var tagName = tag.querySelector(".cortex-tag-name");
+  var tagWhat = tag.querySelector(".cortex-tag-what");
+  var tagNet = tag.querySelector(".cortex-tag-net");
+  var tagFor = null;
+
+  function updateTag() {
+    var best = null;
+    if (P.captions && P.neurons && pointer.inside && !hold.active && gain > 0.5) {
+      var py = pointer.y + offsetY();
+      var bestD = 1e9;
+      for (var i = 0; i < neurons.length; i++) {
+        var n = neurons[i];
+        if (n.layer !== 1) continue;
+        var dx = n.soma.sx - pointer.x;
+        var dy = n.soma.sy - py;
+        var d = Math.sqrt(dx * dx + dy * dy);
+        var reach = n.r * n.soma.ss + 26 * lineK;
+        if (d < reach && d < bestD) {
+          bestD = d;
+          best = n;
+        }
+      }
+    }
+    if (best !== tagFor) {
+      tagFor = best;
+      if (best) {
+        var about = ABOUT[best.type];
+        tagName.textContent = about[0];
+        tagWhat.textContent = about[1];
+        tagNet.textContent = NET_NAMES[best.net];
+        var rgb = hueRGB(netHue(best.net));
+        tagNet.style.color = "rgb(" + Math.round(rgb[0]) + "," + Math.round(rgb[1]) + "," + Math.round(rgb[2]) + ")";
+      }
+      tag.classList.toggle("is-shown", !!best);
+    }
+    if (best) {
+      var x = best.soma.sx + best.r * best.soma.ss + 16;
+      var y = best.soma.sy - offsetY() - 14;
+      var w = tag.offsetWidth;
+      if (x + w > cssW - 12) x = best.soma.sx - best.r * best.soma.ss - 16 - w;
+      tag.style.transform = "translate(" + Math.round(x) + "px," + Math.round(y) + "px)";
+    }
+  }
+
   // ---- Presses -----------------------------------------------------------
+
+  function nearestCell(x, y) {
+    var best = 1e9;
+    for (var i = 0; i < neurons.length; i++) {
+      var dx = neurons[i].soma.sx - x;
+      var dy = neurons[i].soma.sy - y;
+      best = Math.min(best, dx * dx + dy * dy);
+    }
+    return Math.sqrt(best);
+  }
 
   function nearNeurons(x, y, radius, kick, gen) {
     var sy = y + offsetY();
@@ -1315,6 +1720,7 @@
     ripples = live;
 
     if (P.neurons) stepNeurons(dt);
+    updateTag();
   }
 
   function render() {
@@ -1361,33 +1767,66 @@
     }
 
     var bottom = stageBox.top + stageBox.height - scrollY; // true screen position of the hero's lower edge
-    gl.viewport(0, 0, canvas.width, canvas.height);
-    gl.uniform2f(U.uRes, cssW, cssH);
-    gl.uniform1f(U.uScale, scale);
-    gl.uniform3f(U.uSphere, sphere.x, sphere.y - oy, sphere.R);
-    gl.uniformMatrix3fv(U.uRot, false, rot);
-    gl.uniform4fv(U.uWave, waveData);
-    gl.uniform4fv(U.uDet, detData);
-    gl.uniform4fv(U.uRip, ripData);
-    gl.uniform4fv(U.uRipB, ripDataB);
-    gl.uniform4f(U.uHover, hover.dir[0], hover.dir[1], hover.dir[2], hover.energy);
+    var useCells = P.cells && cprog && cellCount > 0;
     var hdir = hold.active && hold.dir ? hold.dir : [0, 0, 1];
-    gl.uniform4f(U.uHold, hdir[0], hdir[1], hdir[2], hold.active && hold.dir ? hold.charge : 0);
-    gl.uniform1f(U.uHoldHue, hold.hue);
-    gl.uniform1f(U.uTime, time % 1000);
-    gl.uniform1f(U.uGain, gain * intro);
-    gl.uniform1f(U.uWide, wide ? 1 : 0);
-    gl.uniform1f(U.uFoldW, (P.foldWidth * foldPxNow) / sphere.R);
-    gl.uniform1f(U.uDetK, detK);
-    gl.uniform2f(U.uFade, bottom - P.fadeLength * (wide ? 1 : 0.64), bottom + (wide ? 60 : 30));
-    gl.uniform4f(U.uLook, P.depth, P.detail, P.sulcusShade, P.shine);
-    gl.uniform4f(U.uLook2, P.brightness, P.rim, P.lamp, P.colorAmount);
-    gl.uniform4f(U.uLook3, P.swell, P.foldKick, P.holdPress, Math.max(0.002, P.lampSize));
-    gl.uniform4f(U.uFrame, P.textShield, P.warmth, 0, 0);
     var az = (P.lightAzimuth * Math.PI) / 180;
     var el = (P.lightElevation * Math.PI) / 180;
-    gl.uniform3f(U.uLight, Math.cos(az) * Math.cos(el), Math.sin(az) * Math.cos(el), Math.sin(el));
+    function shared(u) {
+      gl.uniform2f(u.uRes, cssW, cssH);
+      gl.uniform1f(u.uScale, scale);
+      gl.uniform3f(u.uSphere, sphere.x, sphere.y - oy, sphere.R);
+      gl.uniformMatrix3fv(u.uRot, false, rot);
+      gl.uniform4fv(u.uWave, waveData);
+      gl.uniform4fv(u.uRip, ripData);
+      gl.uniform4fv(u.uRipB, ripDataB);
+      gl.uniform4f(u.uHover, hover.dir[0], hover.dir[1], hover.dir[2], hover.energy);
+      gl.uniform4f(u.uHold, hdir[0], hdir[1], hdir[2], hold.active && hold.dir ? hold.charge : 0);
+      gl.uniform1f(u.uHoldHue, hold.hue);
+      gl.uniform1f(u.uTime, time % 1000);
+      gl.uniform1f(u.uGain, gain * intro);
+      gl.uniform1f(u.uFoldW, (P.foldWidth * foldPxNow) / sphere.R);
+      gl.uniform2f(u.uFade, bottom - P.fadeLength * 0.64 * clamp(unit, 0.8, 2), bottom + 30 * clamp(unit, 0.8, 2));
+      gl.uniform4f(u.uLook, P.depth, P.detail, P.sulcusShade, P.shine);
+      gl.uniform4f(u.uLook2, P.brightness, P.rim, P.lamp, P.colorAmount);
+      gl.uniform4f(u.uLook3, P.swell, P.foldKick, P.holdPress, Math.max(0.002, P.lampSize));
+      gl.uniform4f(u.uFrame, P.textShield, P.warmth, 0, 0);
+      gl.uniform3f(u.uLight, Math.cos(az) * Math.cos(el), Math.sin(az) * Math.cos(el), Math.sin(el));
+    }
+
+    gl.viewport(0, 0, canvas.width, canvas.height);
+    gl.useProgram(prog);
+    gl.bindBuffer(gl.ARRAY_BUFFER, buf);
+    gl.enableVertexAttribArray(aPos);
+    gl.vertexAttribPointer(aPos, 2, gl.FLOAT, false, 0, 0);
+    shared(U);
+    gl.uniform4fv(U.uDet, detData);
+    gl.uniform1f(U.uWide, 0);
+    gl.uniform1f(U.uDetK, detK);
+    gl.uniform1f(U.uMode, useCells ? 1 : 0);
     gl.drawArrays(gl.TRIANGLES, 0, 3);
+
+    if (useCells) {
+      gl.useProgram(cprog);
+      gl.bindBuffer(gl.ARRAY_BUFFER, cellBuf);
+      gl.enableVertexAttribArray(aP);
+      gl.vertexAttribPointer(aP, 3, gl.FLOAT, false, 20, 0);
+      gl.enableVertexAttribArray(aS);
+      gl.vertexAttribPointer(aS, 2, gl.FLOAT, false, 20, 12);
+      shared(CU);
+      gl.uniform4f(CU.uCell, P.cellSize * Math.sqrt(clamp(unit, 0.8, 2.2)), P.cellGlow, P.cellLinks, P.sparkle);
+      gl.enable(gl.BLEND);
+      gl.blendFunc(gl.ONE, gl.ONE); // light adds up
+      if (linkCount && P.cellLinks > 0) {
+        gl.uniform1f(CU.uKind, 1);
+        gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, linkBuf);
+        gl.drawElements(gl.LINES, linkCount, linkType, 0);
+      }
+      gl.uniform1f(CU.uKind, 0);
+      gl.drawArrays(gl.POINTS, 0, cellCount);
+      gl.disable(gl.BLEND);
+      gl.disableVertexAttribArray(aS);
+      if (aP !== aPos) gl.disableVertexAttribArray(aP);
+    }
 
     drawNeurons(gain * intro);
   }
@@ -1459,7 +1898,7 @@
   // ---- Layout ------------------------------------------------------------
 
   function buildWaves() {
-    var foldPx = P.foldSize * (wide ? 1 : 0.72); // fold wavelength on screen
+    var foldPx = P.foldSize * 0.72 * clamp(unit, 0.8, 2.4); // fold wavelength on screen, scaled with the sphere
     foldPxNow = foldPx;
     var K = (TAU * sphere.R) / foldPx;
     waves = [];
@@ -1476,30 +1915,140 @@
     for (i = 0; i < ND; i++) waves.push(one(detK * rnd(0.85, 1.15)));
   }
 
+  // Cells on the part of the sphere that can come into view, on a jittered
+  // Fibonacci lattice, each wired to its nearest neighbours on the same gyrus.
+  function buildCells() {
+    if (!cprog) return;
+    // How much of the sphere can be seen: the cap above the screen's bottom,
+    // plus room for the tilt.
+    var vis = clamp((cssH + 80 - (domeTop - scrollY)) / sphere.R, 0.2, 2);
+    var ymin = clamp(1 - vis - 0.5, -1, 0.85);
+    var spacing = 12.5 * Math.sqrt(clamp(unit, 0.8, 2.2)) / Math.sqrt(P.cellDensity); // px between cells
+    var area = 2 * Math.PI * (1 - ymin) * sphere.R * sphere.R;
+    var N = Math.round(clamp(area / (spacing * spacing), 1500, 42000));
+    var golden = Math.PI * (3 - Math.sqrt(5));
+    var pos = new Float32Array(N * 5);
+    var step = (1 - ymin) / N;
+    var jit = 0.42 * spacing / sphere.R;
+    var i;
+    for (i = 0; i < N; i++) {
+      var y = 1 - step * (i + 0.5);
+      var rr = Math.sqrt(Math.max(0, 1 - y * y));
+      var th = i * golden;
+      var x = Math.cos(th) * rr + rnd(-jit, jit);
+      var z = Math.sin(th) * rr + rnd(-jit, jit);
+      y += rnd(-jit, jit);
+      var l = Math.sqrt(x * x + y * y + z * z);
+      pos[i * 5] = x / l;
+      pos[i * 5 + 1] = y / l;
+      pos[i * 5 + 2] = z / l;
+      pos[i * 5 + 3] = Math.random();
+      pos[i * 5 + 4] = Math.random();
+    }
+
+    // Which side of the nearest sulcus each cell is on (fold field sign).
+    var side = new Int8Array(N);
+    for (i = 0; i < N; i++) {
+      var hh = 0;
+      for (var k = 0; k < NW; k++) {
+        var w = waves[k];
+        hh += Math.cos(w.kx * pos[i * 5] + w.ky * pos[i * 5 + 1] + w.kz * pos[i * 5 + 2] + ((w.ph + w.sp * morphT) % TAU));
+      }
+      side[i] = hh < 0 ? -1 : 1;
+    }
+
+    // Neighbours through a coarse 3D grid.
+    var cs = (1.9 * spacing) / sphere.R;
+    var grid = {};
+    function keyOf(a, b, c) {
+      return a + "," + b + "," + c;
+    }
+    for (i = 0; i < N; i++) {
+      var gk = keyOf(Math.floor(pos[i * 5] / cs), Math.floor(pos[i * 5 + 1] / cs), Math.floor(pos[i * 5 + 2] / cs));
+      (grid[gk] || (grid[gk] = [])).push(i);
+    }
+    var maxD = cs * cs;
+    var links = [];
+    for (i = 0; i < N; i++) {
+      var gx = Math.floor(pos[i * 5] / cs);
+      var gy = Math.floor(pos[i * 5 + 1] / cs);
+      var gz = Math.floor(pos[i * 5 + 2] / cs);
+      var near = [];
+      for (var ax = -1; ax <= 1; ax++)
+        for (var ay = -1; ay <= 1; ay++)
+          for (var az = -1; az <= 1; az++) {
+            var cell = grid[keyOf(gx + ax, gy + ay, gz + az)];
+            if (!cell) continue;
+            for (var m = 0; m < cell.length; m++) {
+              var j = cell[m];
+              if (j <= i) continue;
+              var dx = pos[i * 5] - pos[j * 5];
+              var dy = pos[i * 5 + 1] - pos[j * 5 + 1];
+              var dz = pos[i * 5 + 2] - pos[j * 5 + 2];
+              var d2 = dx * dx + dy * dy + dz * dz;
+              if (d2 < maxD) near.push([d2, j]);
+            }
+          }
+      near.sort(function (p, q) {
+        return p[0] - q[0];
+      });
+      // Two or three short links each, never across a sulcus.
+      var want = Math.random() < 0.5 ? 2 : 3;
+      for (var t = 0, made = 0; t < near.length && made < want; t++) {
+        var jj = near[t][1];
+        if (side[jj] !== side[i]) continue;
+        links.push(i, jj);
+        made++;
+      }
+    }
+
+    var idx = N > 65535 ? new Uint32Array(links) : new Uint16Array(links);
+    if (N > 65535 && !gl.getExtension("OES_element_index_uint")) idx = new Uint16Array(0);
+    gl.bindBuffer(gl.ARRAY_BUFFER, cellBuf);
+    gl.bufferData(gl.ARRAY_BUFFER, pos, gl.STATIC_DRAW);
+    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, linkBuf);
+    gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, idx, gl.STATIC_DRAW);
+    gl.bindBuffer(gl.ARRAY_BUFFER, buf);
+    cellCount = N;
+    linkCount = idx.length;
+    linkType = N > 65535 ? gl.UNSIGNED_INT : gl.UNSIGNED_SHORT;
+  }
+  var linkType = 0;
+
   var builtFor = "";
 
-  function layout() {
-    var rect = stage ? stage.getBoundingClientRect() : { left: cssW * 0.5, top: 80, width: cssW * 0.45, height: cssH * 0.7 };
-    wide = cssW > 920;
-    PARALLAX = wide ? 0.45 : 1; // on phones the scene sits below the copy and must scroll with it
-    stageBox = { left: rect.left, top: rect.top + scrollY, width: rect.width, height: rect.height };
+  // One composition for every screen: the copy on top, the cortex rising as
+  // a horizon beneath it, the networks floating in the space around the copy.
+  // Sizes follow the sphere, so a big window is a scaled-up small one rather
+  // than a different, busier scene.
+  var REF_R = 540; // the sphere's radius in an ~800px-wide window, where the look was tuned
+  var unit = 1;
+  var copyBox = null;
 
-    if (wide) {
-      sphere.R = Math.max(rect.height * 0.98, rect.width * 0.92) * P.size;
-      sphere.x = stageBox.left + rect.width * P.centerX;
-      domeTop = stageBox.top + rect.height * P.horizon;
-    } else {
-      sphere.R = Math.max(rect.width * 1.05, 320) * P.size;
-      sphere.x = stageBox.left + rect.width * 0.5;
-      domeTop = stageBox.top + rect.height * (P.horizon + 0.08);
-    }
+  function layout() {
+    var rect = stage ? stage.getBoundingClientRect() : { left: 0, top: cssH * 0.55, width: cssW, height: cssH * 0.45 };
+    wide = cssW > 920;
+    PARALLAX = 1; // the scene scrolls with the page
+    stageBox = { left: rect.left, top: rect.top + scrollY, width: rect.width, height: rect.height };
+    var copy = document.querySelector(".hero-copy");
+    if (copy) {
+      var cr = copy.getBoundingClientRect();
+      copyBox = { left: cr.left, top: cr.top + scrollY, right: cr.right, bottom: cr.bottom + scrollY };
+    } else copyBox = null;
+
+    // Width sets the size, but a short, wide window must not get a flat, giant arc.
+    sphere.R = Math.max(Math.min(cssW, cssH * 1.3), 320) * P.size;
+    sphere.x = cssW * P.centerX;
+    domeTop = stageBox.top + rect.height * (P.horizon + 0.08);
     sphere.y = domeTop + sphere.R;
+    unit = sphere.R / (REF_R * P.size);
 
     // Rebuild only when the layout really changed, so a small resize does not reshuffle the scene.
-    var key = [wide ? 1 : 0, Math.round(rect.width / 40), Math.round(rect.height / 40)].join(":");
+    var key = [Math.round(cssW / 40), Math.round(cssH / 60), Math.round(rect.height / 40)].join(":");
     if (key !== builtFor) {
       builtFor = key;
       buildWaves();
+      buildCells();
       buildNeurons();
       born = time;
     }
@@ -1518,8 +2067,12 @@
     canvas.height = Math.max(1, Math.round(h * s));
     if (ncanvas) {
       ndpr = dpr;
-      ncanvas.width = Math.max(1, Math.round(w * dpr));
-      ncanvas.height = Math.max(1, Math.round(h * dpr));
+      for (var li = 0; li < 3; li++) {
+        var lc = layerCanvas[li];
+        if (!lc) continue;
+        lc.width = Math.max(1, Math.round(w * dpr * LAYER_RES[li]));
+        lc.height = Math.max(1, Math.round(h * dpr * LAYER_RES[li]));
+      }
     }
     layout();
     if (reduceMotion) settle();
@@ -1563,7 +2116,12 @@
       pointer.inside = true;
       pointer.lastMove = now;
       pointer.target = Math.min(1, Math.max(pointer.target, 0.3 + speed * 0.5));
-      if (audio && speed > 0.6 && pick(e.clientX, e.clientY)) audio.dust(pointer.nx, Math.min(1, speed * 0.28));
+      if (audio && speed > 0.3) {
+        // Over the cortex: grit. Through the networks: a fizz of static.
+        var over = !!pick(e.clientX, e.clientY);
+        var near = !over && nearestCell(e.clientX, e.clientY + offsetY()) < 110 * unit;
+        if (over || near) audio.dust(pointer.nx, Math.min(1, speed * 0.4), near ? "air" : "surface");
+      }
     },
     { passive: true }
   );
@@ -1660,13 +2218,19 @@
     // For checks from the console: the network as it is drawn right now.
     network: function () {
       return {
+        cells: cellCount,
+        cellLinks: linkCount / 2,
+        cellShader: !!cprog,
         neurons: neurons.length,
         storming: storming(),
+        cellsAt: neurons.map(function (n) {
+          return { type: n.type, layer: n.layer, inhib: n.inhib, x: n.soma.sx, y: n.soma.sy - offsetY(), hush: n.hush };
+        }),
         firing: neurons.filter(function (n) {
           return n.glow > 0.5;
         }).length,
         links: conns.map(function (c) {
-          return { root: c.root, a: [c.a.soma.sx, c.a.soma.sy], m: [c.sx, c.sy], b: [c.ex, c.ey], an: c.a.id, bn: c.b ? c.b.id : -1 };
+          return { layer: c.a.layer, root: c.root, a: [c.a.soma.sx, c.a.soma.sy], m: [c.sx, c.sy], b: [c.ex, c.ey], an: c.a.id, bn: c.b ? c.b.id : -1 };
         })
       };
     },

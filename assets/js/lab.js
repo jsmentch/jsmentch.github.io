@@ -31,6 +31,12 @@
 
   var GROUPS = [
     ["Surface", true, [
+      ["cells", "Made of cells", 0, 1, 1, "b"],
+      ["cellDensity", "Cell density", 0.3, 2.5, 0.05, "r"],
+      ["cellSize", "Cell size", 0.5, 4, 0.05],
+      ["cellGlow", "Cell brightness", 0, 3, 0.01],
+      ["cellLinks", "Links between cells", 0, 2, 0.01],
+      ["sparkle", "Cells firing on their own", 0, 3, 0.01],
       ["foldSize", "Fold size", 20, 140, 1, "r"],
       ["foldWidth", "Gyrus roundness", 0.1, 0.6, 0.01],
       ["depth", "Depth", 0, 1.6, 0.01],
@@ -77,6 +83,11 @@
     ["Neurons", false, [
       ["neurons", "Show neurons", 0, 1, 1, "b"],
       ["neuronCount", "Count", 0, 2.5, 0.05, "r"],
+      ["farField", "Far field (blurred)", 0, 2, 0.05, "r"],
+      ["nearField", "Near cells (out of focus)", 0, 1, 0.34, "r"],
+      ["ambient", "Far field firing", 0, 4, 0.05],
+      ["inhibition", "Inhibition", 0, 2, 0.05],
+      ["captions", "Name cells on hover", 0, 1, 1, "b"],
       ["cellScale", "Cell size", 0.5, 2, 0.01, "r"],
       ["stiffness", "Stiffness", 0.2, 3, 0.05],
       ["damping", "Damping", 0.2, 3, 0.05],
@@ -96,7 +107,9 @@
       ["thud", "Thud", 0, 2, 0.01, "a"],
       ["crackle", "Crackle", 0, 3, 0.01, "a"],
       ["room", "Room", 0, 1, 0.01, "a"],
-      ["ticks", "Neuron ticks", 0, 3, 0.01, "a"]
+      ["ticks", "Neuron ticks", 0, 3, 0.01, "a"],
+      ["stir", "Hover crackle", 0, 3, 0.01, "a"],
+      ["hits", "Clicks and releases", 0, 2, 0.01, "a"]
     ]]
   ];
 
@@ -106,7 +119,8 @@
     "Fine grain": { cortex: { foldSize: 34, foldWidth: 0.26, depth: 0.62, detail: 0.08, shine: 0.22, spin: 0.02, waveWidth: 0.03 } },
     "Deep folds": { cortex: { foldSize: 82, foldWidth: 0.42, depth: 1.15, sulcusShade: 0.04, shine: 0.5, lightElevation: 24, lightAzimuth: 40 } },
     "Moonlit": { cortex: { warmth: -0.7, brightness: 0.85, rim: 0.28, shine: 0.62, sulcusShade: 0.06, colorAmount: 0.75 } },
-    "Planet": { cortex: { size: 1.7, horizon: 0.55, centerX: 0.5, spin: 0.05, textShield: 0.35 } },
+    "Shaded surface (15 Nov)": { cortex: { cells: false, foldWidth: 0.12, sulcusShade: 0.06, depth: 0.38, shine: 0.28 }, audio: { stir: 0.4, hits: 1 } },
+    "Planet": { cortex: { size: 1.7, horizon: 0.55, spin: 0.05, textShield: 0.35 } },
     "Quiet": { cortex: { neurons: false, brightness: 0.8, spin: 0.014, morph: 0.5, waveSpeed: 0.42, waveDecay: 1.2 }, audio: { level: 0.35, crackle: 0.5 } },
     "Electric": { cortex: { colorAmount: 1, hueStep: 0.33, waveSpeed: 0.95, swell: 2.6, foldKick: 1.8, pulseSpeed: 520, refractory: 0.5, links: 0.85 }, audio: { crunch: 1.4, crackle: 1.6 } }
   };

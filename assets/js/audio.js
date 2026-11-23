@@ -19,7 +19,9 @@
     thud: 0.61, // low unpitched thump
     crackle: 1, // gravel tail after a hit, and the hold crackle
     room: 0.3, // reverb
-    ticks: 1 // neurons firing
+    ticks: 1, // neurons firing
+    stir: 1, // moving over the cortex and through the networks
+    hits: 0.8 // clicks and releases, against everything else
   };
   var params = {};
   var k;
@@ -217,7 +219,7 @@
     if (gap < 0.016) return;
     lastHit = now;
 
-    var s = Math.max(0.3, Math.min(1.4, strength == null ? 1 : strength));
+    var s = Math.max(0.3, Math.min(1.4, strength == null ? 1 : strength)) * params.hits;
     var roll = Math.max(0, Math.min(1, 1 - gap / 0.3));
     var open = 1 - roll;
     var pan = (nx - 0.5) * 1.4;
@@ -267,13 +269,14 @@
     if (!ensure()) return;
     var c = Math.max(0, Math.min(1, charge));
     var t = ctx.currentTime + 0.003;
+    var hv = params.hits;
     var pan = (nx - 0.5) * 1.2;
     lastHit = ctx.currentTime;
-    burst(t, { buf: white, type: "highpass", freq: 3500, q: 0.5, dur: 0.012, gain: 0.35, pan: pan });
-    burst(t, { buf: crushed, rate: rand(0.3, 0.6), type: "bandpass", freq: 700, q: 0.5, dur: 0.16 + 0.22 * c, gain: 0.55 + 0.25 * c, pan: pan, crunch: 1, wet: 0.1 });
-    if (params.thud > 0.01) burst(t, { buf: white, type: "lowpass", freq: 120, q: 0.8, dur: 0.16 + 0.12 * c, attack: 0.005, gain: params.thud, pan: 0 });
-    burst(t + 0.02, { buf: gravel, rate: rand(0.6, 1.0), type: "highpass", freq: 900, q: 0.4, dur: (0.45 + 0.6 * c) * Math.max(0.3, params.crackle), gain: (0.4 + 0.2 * c) * Math.min(1.5, params.crackle), pan: -pan * 0.5, crunch: 0.7, wet: 0.14 });
-    burst(t + 0.05, { buf: gravel, rate: rand(1.3, 2.0), type: "highpass", freq: 3200, q: 0.4, dur: 0.3 + 0.5 * c, gain: 0.25, pan: pan, crunch: 0.4, wet: 0.1 });
+    burst(t, { buf: white, type: "highpass", freq: 3500, q: 0.5, dur: 0.012, gain: 0.35 * hv, pan: pan });
+    burst(t, { buf: crushed, rate: rand(0.3, 0.6), type: "bandpass", freq: 700, q: 0.5, dur: 0.16 + 0.22 * c, gain: (0.55 + 0.25 * c) * hv, pan: pan, crunch: 1, wet: 0.1 });
+    if (params.thud > 0.01) burst(t, { buf: white, type: "lowpass", freq: 120, q: 0.8, dur: 0.16 + 0.12 * c, attack: 0.005, gain: params.thud * hv, pan: 0 });
+    burst(t + 0.02, { buf: gravel, rate: rand(0.6, 1.0), type: "highpass", freq: 900, q: 0.4, dur: (0.45 + 0.6 * c) * Math.max(0.3, params.crackle), gain: (0.4 + 0.2 * c) * Math.min(1.5, params.crackle) * hv, pan: -pan * 0.5, crunch: 0.7, wet: 0.14 });
+    burst(t + 0.05, { buf: gravel, rate: rand(1.3, 2.0), type: "highpass", freq: 3200, q: 0.4, dur: 0.3 + 0.5 * c, gain: 0.25 * hv, pan: pan, crunch: 0.4, wet: 0.1 });
   }
 
   // Holding down: a looped crackle that tightens and brightens as it charges.
@@ -324,34 +327,54 @@
     var now = ctx.currentTime;
     if (now - lastSpike < 0.022) return;
     lastSpike = now;
+    var pan = ((nx == null ? 0.5 : nx) - 0.5) * 1.6;
     burst(now + 0.002, {
       buf: crushed,
       rate: rand(0.8, 2.2),
       type: "bandpass",
-      freq: rand(1800, 5200),
-      q: 1.2,
-      dur: rand(0.006, 0.016),
-      gain: rand(0.05, 0.11) * params.ticks,
-      pan: ((nx == null ? 0.5 : nx) - 0.5) * 1.6,
-      crunch: 0.8
+      freq: rand(1600, 4600),
+      q: 1.1,
+      dur: rand(0.012, 0.03),
+      gain: rand(0.2, 0.32) * params.ticks,
+      pan: pan,
+      crunch: 0.8,
+      wet: 0.04
     });
+    // A soft knock under it, so a cell firing has some weight.
+    burst(now + 0.002, { buf: white, type: "lowpass", freq: rand(260, 420), q: 0.9, dur: 0.035, attack: 0.002, gain: 0.22 * params.ticks, pan: pan * 0.5 });
   }
 
   // Stirring: sparse, quiet crackle.
-  function dust(nx, amount) {
-    if (!enabled || !ctx || ducked) return;
+  // kind "surface": grit under the pointer. kind "air": static among the cells.
+  function dust(nx, amount, kind) {
+    if (!enabled || !ctx || ducked || params.stir <= 0.01) return;
     var now = ctx.currentTime;
-    if (now - lastDust < 0.035) return;
-    if (Math.random() > amount) return;
+    if (now - lastDust < 0.03) return;
+    if (Math.random() > 0.35 + amount) return;
     lastDust = now;
+    var a = 0.4 + 0.6 * amount;
+    if (kind === "air") {
+      burst(now + 0.002, {
+        buf: crushed,
+        rate: rand(1.4, 2.6),
+        type: "bandpass",
+        freq: rand(3000, 7000),
+        q: 1.6,
+        dur: rand(0.015, 0.04),
+        gain: rand(0.1, 0.18) * a * params.stir,
+        pan: (nx - 0.5) * 1.6,
+        crunch: 0.6
+      });
+      return;
+    }
     burst(now + 0.002, {
       buf: gravel,
       rate: rand(1, 2),
       type: "highpass",
-      freq: rand(2500, 6000),
+      freq: rand(2200, 5500),
       q: 0.4,
-      dur: rand(0.02, 0.05),
-      gain: rand(0.04, 0.1) * amount,
+      dur: rand(0.03, 0.07),
+      gain: rand(0.14, 0.26) * a * params.stir,
       pan: (nx - 0.5) * 1.6,
       crunch: 0.5
     });
